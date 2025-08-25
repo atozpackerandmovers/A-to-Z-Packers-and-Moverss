@@ -1,248 +1,1208 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>A to Z Packers & Movers — Live Tracking</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{ --brand:#0d47a1; --brand-2:#174bbc; --ok:#1b5e20; --warn:#b71c1c; --bg:#f7f8fb;
-           --card:#ffffff; --text:#0f172a; --muted:#64748b; --chip:#eef2ff; }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Inter",system-ui,-apple-system,Segoe UI,Roboto}
-    .container{max-width:960px;margin:0 auto;padding:16px}
-    header{background:var(--brand);color:#fff;padding:18px 0;margin-bottom:16px}
-    h1{margin:0;text-align:center;font-size:20px}
-    .card{background:var(--card);border-radius:14px;box-shadow:0 8px 28px rgba(2,6,23,.08);padding:18px}
-    .title{display:flex;gap:10px;align-items:center;font-weight:700;margin:0 0 12px 0}
-    .muted{color:var(--muted);font-size:13px}
-    label{font-weight:600;font-size:13px;margin:8px 0 6px;display:block}
-    input,select,textarea{width:100%;padding:13px 14px;border:1px solid #dbe1ea;border-radius:12px;background:#fff;font:inherit}
-    .btn{width:100%;padding:13px 16px;border:0;border-radius:12px;color:#fff;font-weight:700;cursor:pointer}
-    .btn.primary{background:var(--brand-2)} .btn.ok{background:var(--ok)} .btn.warn{background:var(--warn)}
-    .grid2{display:grid;gap:10px} @media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
-    .timeline{border-left:3px solid #e2e8f0;margin-left:8px;padding-left:14px}
-    .timeitem{margin:10px 0}.timeitem .dot{width:10px;height:10px;background:var(--brand-2);border-radius:50%;position:relative;left:-20px;top:16px}
-    .bar{display:flex;justify-content:space-between;align-items:center}
-    .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:#111827;color:#fff;border-radius:10px;padding:10px;font-size:12px;overflow:auto}
-    .hide{display:none}
-    .footer{margin:24px 0;color:var(--muted);font-size:12px;text-align:center}
-    .error{color:#b71c1c;margin-top:8px} .oktext{color:#1b5e20;margin-top:8px}
-    .debug{font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:10px;padding:8px;margin-top:10px;color:#334155}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A to Z Packers & Movers - Complete Moving Solutions with Live Tracking</title>
+    <meta name="description" content="Professional packers and movers in Odisha since 2005. Live tracking, cost calculator, and admin panel. Complete coverage of all 30 districts and every PIN code in India.">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #1f2937; overflow-x: hidden; }
+
+        /* Professional Color Scheme */
+        :root {
+            --primary-blue: #1e40af;
+            --secondary-blue: #3b82f6;
+            --accent-orange: #f59e0b;
+            --success-green: #059669;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Loading Animation */
+        .loading-screen { position: fixed; inset: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
+        .loading-screen.hide { opacity: 0; pointer-events: none; }
+        .loader { width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #fff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { color: #fff; font-size: 1.2rem; font-weight: 600; text-align: center; }
+        .loading-subtitle { font-size: 0.875rem; opacity: 0.9; margin-top: 0.5rem; }
+
+        /* Header */
+        .header { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(229, 231, 235, 0.8); box-shadow: var(--shadow);
+            position: sticky; top: 0; z-index: 50; transition: all 0.3s ease; }
+        .header.scrolled { background: rgba(255, 255, 255, 0.95); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12); }
+        .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 90px; }
+        .logo { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+        .logo-icon { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.875rem; box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3); transition: transform 0.3s ease; }
+        .logo-icon:hover { transform: scale(1.05); }
+        .logo-text h1 { font-size: 1.65rem; font-weight: 800; color: var(--text-dark); margin: 0; line-height: 1.1; }
+        .logo-text p { font-size: 0.875rem; color: var(--secondary-blue); font-weight: 600; margin: 0; line-height: 1.1; }
+        .nav { display: flex; align-items: center; gap: 2rem; }
+        .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+        .nav-link { color: var(--text-gray); text-decoration: none; font-weight: 600; font-size: 1rem; padding: 0.875rem 1.5rem; border-radius: 12px; transition: all 0.3s ease; position: relative; }
+        .nav-link:hover, .nav-link.active { color: var(--secondary-blue); background: rgba(59, 130, 246, 0.1); transform: translateY(-1px); }
+        .nav-link.active::after { content: ''; position: absolute; bottom: 0.375rem; left: 50%; transform: translateX(-50%); width: 24px; height: 3px; background: var(--secondary-blue); border-radius: 2px; }
+        .cta-button { background: linear-gradient(135deg, var(--success-green), #047857); color: white; padding: 0.8rem 1.2rem; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 0.6rem; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(5, 150, 105, 0.25); }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(5, 150, 105, 0.35); background: linear-gradient(135deg, #047857, #065f46); }
+
+        /* Mobile Menu */
+        .mobile-menu-btn { display: none; background: var(--bg-light); border: 2px solid rgba(59, 130, 246, 0.2); border-radius: 8px; padding: 0.5rem; font-size: 1.25rem; color: var(--text-dark); cursor: pointer; transition: all 0.3s ease; }
+        .mobile-menu-btn:hover { background: rgba(59, 130, 246, 0.1); border-color: var(--secondary-blue); }
+        .mobile-menu { display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); padding: 1.5rem; z-index: 100; }
+        .mobile-menu.active { display: block; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .mobile-nav-links { display: flex; flex-direction: column; gap: 0.75rem; }
+        .mobile-nav-links .nav-link { padding: 1rem 1.25rem; border-radius: 12px; font-size: 1rem; text-align: center; background: var(--bg-light); border: 1px solid rgba(229, 231, 235, 0.8); }
+
+        /* Hero Section */
+        .hero { background: linear-gradient(135deg, rgba(30, 64, 175, 0.95), rgba(59, 130, 246, 0.9)),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="grid" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke=\"rgba(255,255,255,0.1)\" stroke-width=\"1\"/></pattern></defs><rect width=\"1200\" height=\"600\" fill=\"url(%23grid)\"/></svg>');
+            min-height: 90vh; display: flex; align-items: center; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"20\" cy=\"20\" r=\"2\" fill=\"rgba(255,255,255,0.1)\"/><circle cx=\"80\" cy=\"40\" r=\"1\" fill=\"rgba(255,255,255,0.1)\"/><circle cx=\"40\" cy=\"80\" r=\"1.5\" fill=\"rgba(255,255,255,0.1)\"/></svg>');
+            animation: float 20s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px);} 50% { transform: translateY(-20px);} }
+        .hero-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem; text-align: center; position: relative; z-index: 2; }
+        .hero-title { font-size: clamp(2.3rem, 5vw, 4rem); font-weight: 800; color: white; margin-bottom: 1.5rem; text-shadow: 0 4px 20px rgba(0,0,0,0.3); line-height: 1.1; }
+        .hero-subtitle { font-size: clamp(1.05rem, 2.5vw, 1.35rem); color: rgba(255,255,255,0.95); margin-bottom: 2.2rem; font-weight: 500; max-width: 700px; margin-left: auto; margin-right: auto; }
+        .hero-buttons { display: flex; flex-direction: column; gap: 1rem; align-items: center; margin-bottom: 3rem; }
+        @media (min-width: 640px){ .hero-buttons{ flex-direction: row; justify-content: center; gap: 1.2rem; } }
+
+        .btn-primary { background: linear-gradient(135deg, var(--accent-orange), #d97706); color: white; padding: 1rem 2rem; border-radius: 12px; font-weight: 600; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(245, 158, 11, 0.4); }
+        .btn-secondary { background: transparent; color: white; padding: 1rem 2rem; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-secondary:hover { background: white; color: var(--primary-blue); transform: translateY(-2px); }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .stat-card { text-align: center; padding: 2rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.15); }
+        .stat-number { font-size: 3rem; font-weight: 800; color: var(--accent-orange); text-shadow: 0 4px 15px rgba(0,0,0,0.3); display: block; margin-bottom: 0.5rem; }
+        .stat-label { color: white; font-weight: 600; font-size: 1.1rem; }
+
+        /* Sections */
+        .section { padding: 5rem 0; }
+        .section-alt { background: var(--bg-light); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-title { font-size: 2.3rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; }
+        .section-subtitle { color: var(--text-gray); font-size: 1.1rem; max-width: 700px; margin: 0 auto; }
+
+        /* Card Styles */
+        .card { background: white; border-radius: 16px; padding: 2rem; box-shadow: var(--shadow); border: 1px solid rgba(229, 231, 235, 0.8); transition: all 0.3s ease; height: 100%; }
+        .card:hover { transform: translateY(-8px); box-shadow: var(--shadow-hover); }
+        .card-icon { width: 4rem; height: 4rem; background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: white; font-size: 1.5rem; }
+        .card-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-dark); }
+        .card-description { color: var(--text-gray); line-height: 1.6; }
+
+        /* Grid Layouts */
+        .grid { display: grid; gap: 2rem; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+
+        /* Calculator */
+        .calculator-container { background: white; border-radius: 20px; padding: 3rem; box-shadow: var(--shadow-hover); border: 1px solid rgba(229,231,235,0.8); }
+        .calculator-form { display: grid; gap: 1.5rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .calculator-result { background: linear-gradient(135deg, var(--success-green), #047857); color: white; padding: 2rem; border-radius: 16px; text-align: center; margin-top: 2rem; display: none; }
+        .result-amount { font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .result-label { font-size: 1.1rem; opacity: 0.95; }
+
+        /* Tracking */
+        .tracking-container { background: white; border-radius: 20px; padding: 3rem; box-shadow: var(--shadow-hover); border: 1px solid rgba(229, 231, 235, 0.8); }
+        .tracking-input { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        .tracking-input input { flex: 1; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1.05rem; }
+        .tracking-input button { background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .tracking-result { display: none; background: var(--bg-light); border-radius: 16px; padding: 2rem; margin-top: 2rem; }
+        .tracking-status { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+        .status-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; }
+        .status-in-transit { background: linear-gradient(135deg, var(--accent-orange), #d97706); }
+        .status-delivered { background: linear-gradient(135deg, var(--success-green), #047857); }
+        .status-pending { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+        .tracking-timeline { position: relative; padding-left: 2rem; }
+        .timeline-item { position: relative; padding-bottom: 2rem; border-left: 2px solid #e5e7eb; }
+        .timeline-item:last-child { border-left: none; }
+        .timeline-dot { position: absolute; left: -6px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--secondary-blue); }
+        .timeline-content { margin-left: 1.5rem; }
+        .timeline-time { color: var(--text-gray); font-size: 0.875rem; margin-bottom: 0.25rem; }
+        .timeline-title { font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; }
+        .timeline-description { color: var(--text-gray); font-size: 0.9rem; }
+
+        /* Admin Panel */
+        .admin-panel { background: white; border-radius: 20px; padding: 3rem; box-shadow: var(--shadow-hover); border: 1px solid rgba(229, 231, 235, 0.8); }
+        .admin-login { max-width: 400px; margin: 0 auto; text-align: center; }
+        .admin-dashboard { display: none; }
+        .admin-tabs { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #e5e7eb; }
+        .admin-tab { padding: 1rem 2rem; background: none; border: none; font-weight: 600; color: var(--text-gray); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s ease; }
+        .admin-tab.active { color: var(--secondary-blue); border-bottom-color: var(--secondary-blue); }
+        .admin-content { display: none; }
+        .admin-content.active { display: block; }
+        .shipment-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .shipment-table th, .shipment-table td { padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .shipment-table th { background: var(--bg-light); font-weight: 600; color: var(--text-dark); }
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600; }
+        .status-badge.status-pending { background: #f3f4f6; color: #374151; }
+        .status-badge.status-in-progress { background: #dbeafe; color: #1e40af; }
+        .status-badge.status-completed { background: #d1fae5; color: #065f46; }
+
+        /* Testimonials */
+        .testimonial-card { background: white; padding: 2rem; border-radius: 16px; box-shadow: var(--shadow); position: relative; transition: all 0.3s ease; }
+        .testimonial-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .testimonial-header { display: flex; align-items: center; margin-bottom: 1.5rem; }
+        .testimonial-avatar { width: 60px; height: 60px; background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.5rem; margin-right: 1rem; }
+        .testimonial-info h4 { font-weight: 700; color: var(--text-dark); margin-bottom: 0.25rem; }
+        .testimonial-info p { color: var(--text-gray); font-size: 0.9rem; }
+        .testimonial-rating { display: flex; gap: 0.25rem; margin-bottom: 1rem; }
+        .star { color: #fbbf24; font-size: 1.25rem; }
+        .testimonial-text { color: var(--text-gray); font-style: italic; line-height: 1.6; }
+
+        /* Contact Form */
+        .contact-form { background: white; padding: 3rem; border-radius: 20px; box-shadow: var(--shadow-hover); border: 1px solid rgba(229, 231, 235, 0.8); }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-label { display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; }
+        .form-input { width: 100%; padding: 0.875rem 1rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease; }
+        .form-input:focus { outline: none; border-color: var(--secondary-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .form-textarea { resize: vertical; min-height: 120px; }
+        .form-submit { background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; width: 100%; }
+        .form-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59,130,246,0.3); }
+
+        /* Footer */
+        .footer { background: var(--text-dark); color: white; padding: 4rem 0 2rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-bottom: 3rem; }
+        .footer-section h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.2rem; color: white; }
+        .footer-section ul { list-style: none; }
+        .footer-section ul li { margin-bottom: 0.75rem; }
+        .footer-section ul li a { color: #d1d5db; text-decoration: none; transition: color 0.3s ease; }
+        .footer-section ul li a:hover { color: white; }
+        .footer-bottom { border-top: 1px solid #374151; padding-top: 2rem; text-align: center; color: #9ca3af; }
+
+        /* Floating Elements */
+        .floating-whatsapp { position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: #25d366; color: white; padding: 1rem; border-radius: 50%; box-shadow: 0 8px 25px rgba(37,211,102,0.3); transition: all 0.3s ease; text-decoration: none; font-size: 1.5rem; animation: pulse 2s infinite; }
+        .floating-whatsapp:hover { transform: translateY(-3px) scale(1.1); box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4); }
+        @keyframes pulse { 0% { box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);} 50% { box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5), 0 0 0 10px rgba(37, 211, 102, 0.1);} 100% { box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);} }
+
+        /* Scroll to Top */
+        .scroll-top { position: fixed; bottom: 80px; right: 20px; background: var(--primary-blue); color: white; padding: 0.75rem; border-radius: 50%; box-shadow: 0 4px 15px rgba(30,64,175,0.3); cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 999; }
+        .scroll-top.visible { opacity: 1; visibility: visible; }
+        .scroll-top:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(30,64,175,0.4); }
+
+        /* Simple reveal animation helper */
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+
+        /* Responsive adjustments for mobile */
+        @media (max-width: 768px) {
+            /* Hide the desktop nav and quote button on small screens */
+            .nav-links,
+            .cta-button { display: none; }
+            /* Show the mobile menu toggle */
+            .mobile-menu-btn { display: block; }
+            /* Reduce header height and padding for a compact look */
+            .header-content { height: 72px; padding: 0 1rem; }
+            /* Scale down logo elements */
+            .logo-icon { width: 50px; height: 50px; font-size: 1.5rem; }
+            .logo-text h1 { font-size: 1.28rem; }
+            .logo-text p { font-size: 0.76rem; }
+            /* Adjust general spacing */
+            .hero-content { padding: 0 1rem; }
+            .section { padding: 3rem 0; }
+            .container { padding: 0 1rem; }
+            .grid { gap: 1.5rem; }
+            .card { padding: 1.5rem; }
+            .section-title { font-size: 1.9rem; }
+            .contact-form,
+            .calculator-container,
+            .tracking-container,
+            .admin-panel { padding: 2rem; }
+            .form-row { grid-template-columns: 1fr; }
+            /* Tabs wrap gracefully on smaller screens */
+            .admin-tabs { flex-wrap: wrap; }
+            /* Stack tracking input and timeline */
+            .tracking-input { flex-direction: column; }
+            .tracking-timeline { padding-left: 1rem; }
+            .timeline-content { margin-left: 1rem; }
+            /* Center status elements */
+            .tracking-status { flex-direction: column; text-align: center; gap: 1rem; }
+            .status-icon { margin: 0 auto; }
+            /* Modal adjustments */
+            .admin-modal-content { padding: 2rem 1rem; margin: 1rem; max-height: 95vh; }
+            .admin-tabs { flex-direction: column; gap: 0.5rem; }
+            .admin-tab { padding: 0.75rem 1rem; text-align: center; }
+            /* Make the shipment table more compact and hide less critical columns */
+            .shipment-table { font-size: 0.875rem; }
+            .shipment-table th, .shipment-table td { padding: 0.5rem 0.25rem; }
+            .shipment-table th:nth-child(n+4),
+            .shipment-table td:nth-child(n+4) { display: none; }
+        }
+    </style>
 </head>
 <body>
-<header><div class="container"><h1>🚚 A to Z Packers & Movers — Live Tracking</h1></div></header>
-
-<div class="container">
-
-  <!-- PUBLIC TRACKING -->
-  <div class="card">
-    <h2 class="title">🔍 Track Your Shipment</h2>
-    <div class="grid2">
-      <div>
-        <label for="trackInput">Enter Tracking ID</label>
-        <input id="trackInput" placeholder="AZ250821-8226" autocomplete="off">
-      </div>
-      <div>
-        <label>&nbsp;</label>
-        <button class="btn ok" id="btnTrack" type="button">Track Now</button>
-      </div>
-    </div>
-
-    <div id="result" class="hide" style="margin-top:14px">
-      <div class="bar">
-        <div>
-          <div style="font-weight:700" id="rName">—</div>
-          <div class="muted" id="rContact">—</div>
-        </div>
-        <div class="pill" id="rTid">—</div>
-      </div>
-      <div class="muted" style="margin-top:6px" id="rRoute">—</div>
-      <div class="timeline" id="rTimeline" style="margin-top:10px"></div>
-    </div>
-
-    <div id="noResult" class="muted hide" style="margin-top:10px">No order found for that Tracking ID.</div>
-  </div>
-
-  <!-- ADMIN LOGIN (under tracking) -->
-  <div class="card" id="loginCard">
-    <h2 class="title">🔑 Admin Login</h2>
-    <form id="loginForm" autocomplete="off" novalidate>
-      <div class="grid2">
-        <div>
-          <label for="email">Email</label>
-          <input id="email" name="no-autofill-email" type="email" placeholder="Enter admin email" inputmode="email" autocomplete="off" autocapitalize="none" />
-        </div>
-        <div>
-          <label for="password">Password</label>
-          <input id="password" name="no-autofill-pass" type="password" placeholder="Your password" autocomplete="new-password" />
-        </div>
-      </div>
-      <div class="grid2" style="margin-top:10px">
-        <button class="btn ok" id="btnSignIn" type="submit">Sign In</button>
-        <button class="btn warn" id="btnSignOut" type="button">Sign Out</button>
-      </div>
-      <div class="muted" id="authState">Not signed in</div>
-      <div class="error" id="authError" style="display:none"></div>
-      <div class="oktext" id="authOk" style="display:none"></div>
-      <div class="debug" id="dbg">JS: booting…</div>
-    </form>
-  </div>
-
-  <!-- ADMIN PANEL (hidden until signed in) -->
-  <div class="card hide" id="adminPanel">
-    <h2 class="title">⚙️ Admin Panel</h2>
-
-    <h3 style="margin:6px 0 8px">Create new order</h3>
-    <div class="grid2">
-      <div><label for="custName">Customer Name</label><input id="custName" placeholder="Full name"></div>
-      <div><label for="custContact">Contact</label><input id="custContact" placeholder="+91 98xxxxxxx"></div>
-    </div>
-    <div class="grid2">
-      <div><label for="fromCity">From (pickup city)</label><input id="fromCity" placeholder="Bhubaneswar"></div>
-      <div><label for="toCity">To (destination)</label><input id="toCity" placeholder="Lucknow"></div>
-    </div>
-    <div class="grid2">
-      <div><label>Tracking ID (auto)</label><div class="kbd" id="autoTid"></div></div>
-      <div><label>&nbsp;</label><button class="btn primary" id="btnCreate" type="button">Save New Entry (Booked)</button></div>
-    </div>
-    <div class="muted">First status will be <span class="pill">Booked</span> with current time.</div>
-
-    <hr style="margin:18px 0;border:none;border-top:1px dashed #e2e8f0">
-
-    <h3 style="margin:6px 0 8px">Quick Status Update</h3>
-    <div class="grid2">
-      <div><label for="updTid">Tracking ID</label><input id="updTid" placeholder="Enter existing Tracking ID"></div>
-      <div><label for="updStatus">Status</label>
-        <select id="updStatus">
-          <option>Booked</option><option>Picked Up</option><option>Transit</option>
-          <option>Destination In</option><option>Destination Out</option>
-          <option>Out for Delivery</option><option>Delivered</option>
-        </select>
-      </div>
-    </div>
-    <div class="grid2" style="margin-top:10px">
-      <div>
-        <label for="updItems">Items</label>
-        <input id="updItems" placeholder="Fridge, Sofa, Boxes">
-      </div>
-      <div>
-        <label for="updExpected">Expected Date of Delivery</label>
-        <input id="updExpected" type="date">
-      </div>
-    </div>
-    <div class="grid2" style="margin-top:10px">
-      <button class="btn ok" id="btnAddStatus" type="button">Add Status (now)</button>
-      <div class="muted" id="adminHint"></div>
-    </div>
-  </div>
-
-  <div class="footer">© A to Z Packers & Movers • Firestore Live Tracking</div>
+<div class="loading-screen">
+    <div class="loader"></div>
+    <div class="loading-text">Loading A to Z Packers & Movers...</div>
+    <div class="loading-subtitle">Your trusted moving partner</div>
 </div>
 
-<!-- Firebase COMPAT -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<header class="header">
+    <div class="header-content">
+        <a href="#" class="logo">
+            <div class="logo-icon">A</div>
+            <div class="logo-text">
+                <h1>A to Z</h1>
+                <p>Packers & Movers</p>
+            </div>
+        </a>
+        <nav class="nav">
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="#about" class="nav-link">About Us</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            <a href="#track" class="cta-button">Track Shipment</a>
+        </nav>
+        <button class="mobile-menu-btn" id="mobileMenuButton">&#9776;</button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+        <nav>
+            <div class="mobile-nav-links">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="#about" class="nav-link">About Us</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="#track" class="cta-button">Track Shipment</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<!-- Hero Section -->
+<section id="home" class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Complete Moving Solutions in Odisha & All PIN Codes</h1>
+        <p class="hero-subtitle">Trusted packers & movers with live tracking, advanced calculators, and professional service since 2005.</p>
+        <div class="hero-buttons">
+            <a href="#track" class="btn-primary">Track Your Shipment</a>
+            <a href="#pricing" class="btn-secondary">Get a Quote</a>
+        </div>
+
+        <div class="stats-grid reveal">
+            <div class="stat-card">
+                <span class="stat-number">30</span>
+                <span class="stat-label">Districts Covered</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">75k+</span>
+                <span class="stat-label">Shipments Delivered</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Customer Satisfaction</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">50</span>
+                <span the stat-label">Partner Vendors</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Service Section -->
+<section id="services" class="section section-alt">
+    <div class="container reveal">
+        <div class="section-header">
+            <h2 class="section-title">Our Services</h2>
+            <p class="section-subtitle">We provide comprehensive moving and logistics solutions tailored to your needs</p>
+        </div>
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-icon"><i>🚚</i></div>
+                <h3 class="card-title">Residential Relocation</h3>
+                <p class="card-description">Safe and efficient packing, loading and transportation for home and local moves.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i>🏢</i></div>
+                <h3 class="card-title">Corporate Shifting</h3>
+                <p class="card-description">Professional, seamless solutions for office and industrial relocation projects.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i>📦</i></div>
+                <h3 class="card-title">Warehousing & Storage</h3>
+                <p class="card-description">Secure short-term and long-term storage facilities with real-time tracking.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="section">
+    <div class="container reveal">
+        <div class="section-header">
+            <h2 class="section-title">Get an Instant Quote</h2>
+            <p class="section-subtitle">Use our calculator to estimate your moving cost</p>
+        </div>
+        <div class="calculator-container">
+            <form class="calculator-form" id="costCalculatorForm">
+                <div class="form-row">
+                    <div>
+                        <label for="origin">Origin (City/PIN)</label>
+                        <input id="origin" type="text" name="origin" class="form-input" placeholder="Enter origin city or PIN">
+                    </div>
+                    <div>
+                        <label for="destination">Destination (City/PIN)</label>
+                        <input id="destination" type="text" name="destination" class="form-input, placeholder="Enter destination city or PIN">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label for="distance">Distance (km)</label>
+                        <input id="distance" type="number" name="distance" class="form-input" placeholder="e.g., 50">
+                    </div>
+                    <div>
+                        <label for="items">Number of Items</label>
+                        <input id="items" type="number" name="items" class="form-input" placeholder="Total items">
+                    </div>
+                </div>
+                <button type="submit" class="form-submit">Calculate Cost</button>
+                <div class="calculator-result" id="calculatorResult">
+                    <div class="result-amount" id="calculatedCost">0</div>
+                    <div class="result-label">Estimated Total Cost</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Tracking Section -->
+<section id="track" class="section section-alt">
+    <div class="container reveal">
+        <div class="section-header">
+            <h2 class="section-title">Live Shipment Tracking</h2>
+            <p class="section-subtitle">Enter your tracking ID below to see the status and timeline of your shipment</p>
+        </div>
+        <div class="tracking-container">
+            <div class="tracking-input">
+                <input type="text" placeholder="Enter Tracking ID (e.g., ATZ20252501)" id="trackingId">
+                <button onclick="startTracking()" id="startTrackingButton">Track</button>
+            </div>
+            <div class="tracking-result" id="trackingResult">
+                <div class="tracking-status">
+                    <div class="status-icon status-in-transit" id="statusIcon"><i>🚚</i></div>
+                    <div>
+                        <h4 id="statusTitle">In Transit</h4>
+                        <p id="statusDescription">Your shipment is on the way</p>
+                        <p><strong>Tracking ID:</strong> <span id="displayTrackingId">—</span></p>
+                    </div>
+                </div>
+                <div class="tracking-timeline" id="trackingTimeline">
+                    <!-- Timeline items injected here -->
+                </div>
+                <div class="tracking-order-details">
+                    <h3>Shipment Details</h3>
+                    <p><strong>From:</strong> <span id="fromLocation">—</span></p>
+                    <p><strong>To:</strong> <span id="toLocation">—</span></p>
+                    <p><strong>Service:</strong> <span id="serviceType">—</span></p>
+                    <p><strong>Expected Delivery:</strong> <span id="expectedDelivery">—</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Admin Panel (for demonstration) -->
+<section id="admin" class="section">
+    <div class="container reveal">
+        <div class="section-header">
+            <h2 class="section-title">Admin Panel</h2>
+            <p class="section-subtitle">Manage shipments, customers and analytics</p>
+        </div>
+        <div class="admin-panel">
+            <div class="admin-login" id="adminLogin">
+                <h3>Admin Login</h3>
+                <div class="form-group">
+                    <label for="adminUsername">Username</label>
+                    <input id="adminUsername" type="text" class="form-input" placeholder="admin">
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input id="adminPassword" type="password" class="form-input" placeholder="******">
+                </div>
+                <button id="adminLoginButton" class="form-submit">Login</button>
+            </div>
+            <div class="admin-dashboard" id="adminDashboard">
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="shipments">Shipments</button>
+                    <button class="admin-tab" data-tab="customers">Customers</button>
+                    <button class="admin-tab" data-tab="analytics">Analytics</button>
+                    <button class="admin-tab" data-tab="settings">Settings</button>
+                </div>
+                <div class="admin-content active" id="shipmentsTab">
+                    <h4>Shipments</h4>
+                    <button class="btn-primary" id="addShipmentButton">+ Add New Shipment</button>
+                    <table class="shipment-table" id="shipmentTable">
+                        <thead>
+                            <tr>
+                                <th>Tracking ID</th>
+                                <th>Customer</th>
+                                <th>From → To</th>
+                                <th>Service</th>
+                                <th>Status</th>
+                                <th>Pickup Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipmentTableBody">
+                            <!-- Shipments injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="admin-content" id="customersTab">
+                    <h4>Customers</h4>
+                    <p>Customer management coming soon...</p>
+                </div>
+                <div class="admin-content" id "analyticsTab">
+                    <h4>Analytics</h4>
+                    <p>Analytics dashboard coming soon...</p>
+                </div>
+                <div class="admin-content" id="settingsTab">
+                    <h4>Settings</h4>
+                    <p>Settings management coming soon...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="section section-alt">
+    <div class="container reveal">
+        <div class="section-header">
+            <h2 class="section-title">Happy Customers</h2>
+            <p class="section-subtitle">What our customers say about us</p>
+        </div>
+        <div class="grid grid-3">
+            <div class="testimonial-card">
+                <div class="testimonial-header">
+                    <div class="testimonial-avatar">A</div>
+                    <div class="testimonial-info">
+                        <h4>Archana R.</h4>
+                        <p>Berhampur</p>
+                    </div>
+                </div>
+                <div class="testimonial-rating">
+                    <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                </div>
+                <p class="testimonial-text">“Smooth experience and quick delivery. Their live tracking gave me peace of mind. Highly recommended!”</p>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-header">
+                    <div class="testimonial-avatar">P</div>
+                    <div class="testimonial-info">
+                        <h4>Prateek S.</h4>
+                        <p>Bhubaneswar</p>
+                    </div>
+                </div>
+                <div class="testimonial-rating">
+                    <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">☆</span>
+                </div>
+                <p class="testimonial-text">“Professional service. The team handled my office relocation with utmost care and efficiency.”</p>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-header">
+                    <div class "testimonial-avatar">S</div>
+                    <div class="testimonial-info">
+                        <h4>Sunita P.</h4>
+                        <p>Cuttack</p>
+                    </div>
+                </div>
+                <div class="testimonial-rating">
+                    <span class="star">★</span><span the star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                </div>
+                <p class="testimonial-text">“Great value for money. They managed everything from packing to unloading. Will use their service again!”</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Brand & Contact Section (newly added) -->
+<section class="section">
+    <div class="container reveal">
+        <div class="section-header">
+            <h2 class="section-title">Our Brand & Contact</h2>
+            <p class="section-subtitle">Reach out to us anytime</p>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <img src="logistics_image.png" alt="Logistics illustration" style="max-width: 600px; width: 100%; border-radius: 20px; box-shadow: var(--shadow-hover);">
+            <div style="background: var(--primary-blue); color: white; padding: 1.5rem; border-radius: 20px; margin-top: -3rem; width: 90%; max-width: 600px; box-shadow: var(--shadow); text-align: center;">
+                <h2>A to Z Packers & Movers</h2>
+                <p>For inquiries, call <strong>9338888550</strong></p>
+                <p>Visit us: <strong><a href="https://www.atozpackersmovers.in" style="color:#fcd34d;">www.atozpackersmovers.in</a></strong></p>
+                <p>Email: <strong><a href="mailto:info@atozpackersmovers.in" style="color:#fcd34d;">info@atozpackersmovers.in</a></strong></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Video Section -->
+<section class="section section-alt">
+    <div class="container reveal">
+        <div class="section-header">
+            <h2 class="section-title">Watch Our Services</h2>
+            <p class="section-subtitle">See how we make your move stress-free</p>
+        </div>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:20px;box-shadow:var(--shadow);">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="A to Z Packers & Movers" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="section">
+    <div class="container reveal">
+        <div class="section-header">
+            <h2 class="section-title">Get in Touch</h2>
+            <p class="section-subtitle">We would love to hear from you</p>
+        </div>
+        <form class="contact-form" id="contactForm">
+            <div class="form-group">
+                <label class="form-label" for="contactName">Name</label>
+                <input class="form-input" type="text" id="contactName" name="name" required placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="contactEmail">Email</label>
+                <input class="form-input" type="email" id="contactEmail" name="email" required placeholder="Enter your email address">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="contactMessage">Message</label>
+                <textarea class="form-input form-textarea" id="contactMessage" name="message" required placeholder="Write your message"></textarea>
+            </div>
+            <button type="submit" class="form-submit">Send Message</button>
+        </form>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>A to Z Packers & Movers</h3>
+                <p>Your trusted partner for moving and logistics solutions. With over two decades of experience, we ensure hassle-free relocations.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#track">Track</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect with Us</h3>
+                <ul>
+                    <li><a href="tel:+919338888550">Call: 9338888550</a></li>
+                    <li><a href="mailto:info@atozpackersmovers.in">Email: info@atozpackersmovers.in</a></li>
+                    <li><a href="https://www.atozpackersmovers.in" target="_blank">Website</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <ul>
+                    <li><a href="https://facebook.com/atozpackersmovers" target="_blank">Facebook</a></li>
+                    <li><a href="https://instagram.com/atozpackersmovers" target="_blank">Instagram</a></li>
+                    <li><a href="https://youtube.com/@atozpackersmovers" target="_blank">YouTube</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2025 A to Z Packers & Movers. All rights reserved.
+        </div>
+    </div>
+</footer>
+
+<a href="https://wa.me/919338888550" class="floating-whatsapp" title="Chat with us on WhatsApp">💬</a>
+<div class="scroll-top" id="scrollTopButton">↑</div>
+
+<!-- Toast -->
+<div id="toast"></div>
 
 <script>
+/* ===== Theme: loading, header scroll, smooth anchors, fade-in reveals ===== */
+(function() {
+    const loadingScreen = document.querySelector('.loading-screen');
+    window.addEventListener('load', () => {
+        setTimeout(() => loadingScreen.classList.add('hide'), 600);
+    });
+
+    const header = document.querySelector('.header');
+    window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 80);
+        const scrollTopBtn = document.getElementById('scrollTopButton');
+        if (window.scrollY > 200) {
+            scrollTopBtn.classList.add('visible');
+        } else {
+            scrollTopBtn.classList.remove('visible');
+        }
+    });
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            const targetId = this.getAttribute('href').substring(1);
+            const target = document.getElementById(targetId);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    const mobileMenuBtn = document.getElementById('mobileMenuButton');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('active');
+    });
+
+    document.getElementById('scrollTopButton').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = 1;
+                entry.target.style.transform = 'translateY(0)';
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    reveals.forEach(el => revealObserver.observe(el));
+})();
+</script>
+
+<script>
+/* ===== Calculator Logic ===== */
+(function() {
+    const form = document.getElementById('costCalculatorForm');
+    const resultContainer = document.getElementById('calculatorResult');
+    const resultAmount = document.getElementById('calculatedCost');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const distance = parseFloat(document.getElementById('distance').value) || 0;
+        const items = parseInt(document.getElementById('items').value) || 0;
+        const costPerKm = 25;
+        const costPerItem = 100;
+        const totalCost = (distance * costPerKm) + (items * costPerItem);
+        resultAmount.textContent = '₹' + totalCost.toLocaleString();
+        resultContainer.style.display = 'block';
+    });
+})();
+</script>
+
+<script>
+/* ===== Admin Panel Logic (local storage and remote store) ===== */
+(function() {
+    const adminLogin = document.getElementById('adminLogin');
+    const adminDashboard = document.getElementById('adminDashboard');
+    const loginBtn = document.getElementById('adminLoginButton');
+    const shipmentTableBody = document.getElementById('shipmentTableBody');
+    const addShipmentButton = document.getElementById('addShipmentButton');
+    const adminTabs = document.querySelectorAll('.admin-tab');
+    const adminContents = document.querySelectorAll('.admin-content');
+
+    const STORE_KEY = 'orders';
+    let orders = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+
+    // Replace these with your remote API endpoint if using a third-party service
+    const API_ENDPOINT = '<YOUR_ENDPOINT_URL>'; // e.g., https://api.jsonbin.io/v3/b/xyz
+    const API_KEY = '<API_KEY>';
+    const USE_REMOTE = false; // set to true after you provide a real endpoint and API key
+
+    function syncToRemote() {
+        if (!USE_REMOTE) return Promise.resolve();
+        return fetch(API_ENDPOINT, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': API_KEY
+            },
+            body: JSON.stringify(orders)
+        }).catch(err => console.error('Remote sync failed:', err));
+    }
+
+    function fetchFromRemote() {
+        if (!USE_REMOTE) return Promise.resolve();
+        return fetch(API_ENDPOINT, {
+            method: 'GET',
+            headers: { 'X-Master-Key': API_KEY }
+        })
+        .then(res => res.json())
+        .then(json => {
+            orders = json.record || {};
+            localStorage.setItem(STORE_KEY, JSON.stringify(orders));
+        })
+        .catch(err => console.error('Remote fetch failed:', err));
+    }
+
+    function saveLocal() {
+        localStorage.setItem(STORE_KEY, JSON.stringify(orders));
+        syncToRemote();
+    }
+
+    function loadOrders() {
+        shipmentTableBody.innerHTML = '';
+        const ids = Object.keys(orders);
+        if (!ids.length) {
+            shipmentTableBody.innerHTML = '<tr><td colspan="7">No shipments yet</td></tr>';
+            return;
+        }
+        ids.forEach(id => {
+            const o = orders[id];
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${id}</td>
+                <td>${o.customer?.name || '—'}</td>
+                <td>${o.route?.from || '—'} → ${o.route?.to || '—'}</td>
+                <td>${o.service || '—'}</td>
+                <td><span class="status-badge ${statusClass(o)}">${statusLabel(o)}</span></td>
+                <td>${o.pickupDate || '—'}</td>
+                <td>
+                    <button onclick="viewShipment('${id}')">View</button>
+                    <button onclick="editShipment('${id}')">Edit</button>
+                </td>
+            `;
+            shipmentTableBody.appendChild(tr);
+        });
+    }
+
+    function statusClass(o) {
+        if (!o.statuses || !o.statuses.length) return 'status-pending';
+        const code = o.statuses[o.statuses.length - 1].code;
+        if (code === 'PENDING') return 'status-pending';
+        if (code === 'IN_TRANSIT') return 'status-in-progress';
+        if (code === 'DELIVERED') return 'status-completed';
+        return 'status-pending';
+    }
+
+    function statusLabel(o) {
+        if (!o.statuses || !o.statuses.length) return 'Pending';
+        const last = o.statuses[o.statuses.length - 1];
+        return last.label || last.code || 'Pending';
+    }
+
+    function addNewShipment(id, customerName, customerPhone, from, to, service, pickupDate) {
+        const trackingId = id || generateTrackingId();
+        orders[trackingId] = {
+            trackingId,
+            customer: { name: customerName || '—', phone: customerPhone || '—' },
+            route: { from, to },
+            service,
+            pickupDate,
+            expectedDelivery: calculateExpectedDelivery(pickupDate),
+            statuses: [ { time: new Date().toISOString(), code: 'PENDING', label: 'Pending', description: 'Shipment created.' } ]
+        };
+        saveLocal();
+        return trackingId;
+    }
+
+    function generateTrackingId() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        return `ATZ${year}${month}${day}${random}`;
+    }
+
+    function calculateExpectedDelivery(pickupDate) {
+        const date = pickupDate ? new Date(pickupDate) : new Date();
+        date.setDate(date.getDate() + 3);
+        return date.toISOString().split('T')[0];
+    }
+
+    window.viewShipment = function(id) {
+        const o = orders[id];
+        if (!o) {
+            alert('Shipment not found');
+            return;
+        }
+        alert(JSON.stringify(o, null, 2));
+    };
+
+    window.editShipment = function(id) {
+        const o = orders[id];
+        if (!o) {
+            alert('Shipment not found');
+            return;
+        }
+        const newStatus = prompt('Enter new status: Pending, In Transit, Delivered', o.statuses[o.statuses.length - 1].label);
+        let code;
+        if (newStatus?.toLowerCase().includes('deliver')) code = 'DELIVERED';
+        else if (newStatus?.toLowerCase().includes('transit')) code = 'IN_TRANSIT';
+        else code = 'PENDING';
+        const customLabel = prompt('Custom label (optional)', newStatus);
+        const note = prompt('Note (optional)', '');
+        addStatus(id, code, customLabel || newStatus, note);
+        loadOrders();
+    };
+
+    window.addStatus = function(trackingId, code, label, description) {
+        const o = orders[trackingId];
+        if (!o) {
+            alert('Shipment not found');
+            return;
+        }
+        if (!o.statuses) o.statuses = [];
+        o.statuses.push({
+            time: new Date().toISOString(),
+            code,
+            label,
+            description: description || ''
+        });
+        o.expectedDelivery = calculateExpectedDelivery(o.pickupDate);
+        saveLocal();
+        return Promise.resolve({ order: o });
+    };
+
+    window.addShipment = function() {
+        const name = prompt('Customer name');
+        const phone = prompt('Customer phone');
+        const from = prompt('From location');
+        const to = prompt('To location');
+        const service = prompt('Service type (e.g., Full Truck, Mini Truck, Packing)');
+        const pickupDate = prompt('Pickup date (YYYY-MM-DD)', new Date().toISOString().split('T')[0]);
+        const trackingId = addNewShipment('', name, phone, from, to, service, pickupDate);
+        alert('Shipment created with ID: ' + trackingId);
+        loadOrders();
+    };
+
+    addShipmentButton.addEventListener('click', addShipment);
+
+    adminTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            adminTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            adminContents.forEach(c => c.classList.remove('active'));
+            const contentId = tab.textContent.toLowerCase() + 'Tab';
+            document.getElementById(contentId).classList.add('active');
+        });
+    });
+
+    loginBtn.addEventListener('click', () => {
+        const username = document.getElementById('adminUsername').value.trim();
+        const password = document.getElementById('adminPassword').value.trim();
+        if (username === 'admin' && password === '123456') {
+            adminLogin.style.display = 'none';
+            adminDashboard.style.display = 'block';
+            fetchFromRemote().then(loadOrders);
+        } else {
+            alert('Invalid credentials. Try "admin" / "123456".');
+        }
+    });
+})();
+</script>
+
+<script>
+/* ===== Tracking Logic ===== */
+(function() {
+    const STORE_KEY = 'orders';
+
+    function getDemoOrder(id) {
+        const sample = {
+            trackingId: id,
+            customer: { name: 'Demo User', phone: '1234567890' },
+            route: { from: 'Bhubaneswar', to: 'Cuttack' },
+            service: 'Mini Truck',
+            pickupDate: new Date().toISOString().split('T')[0],
+            expectedDelivery: new Date(Date.now()+2*24*3600*1000).toISOString().split('T')[0],
+            statuses: [
+                { time: new Date(Date.now()-2*24*3600*1000).toISOString(), code: 'PENDING', label: 'Order Received', description:'We received your order.' },
+                { time: new Date(Date.now()-1*24*3600*1000).toISOString(), code: 'IN_TRANSIT', label: 'Picked Up', description:'Your shipment has been picked up.' },
+                { time: new Date().toISOString(), code: 'IN_TRANSIT', label: 'In Transit', description:'Your shipment is on the way.' }
+            ]
+        };
+        return sample;
+    }
+
+    function fetchOrder(id) {
+        const orders = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+        if (orders[id]) return Promise.resolve(orders[id]);
+        return Promise.resolve(null);
+    }
+
+    function updateStatusDisplay(order) {
+        const last = order.statuses[order.statuses.length - 1];
+        const statusIcon = document.getElementById('statusIcon');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusDesc = document.getElementById('statusDescription');
+        const displayTrackingId = document.getElementById('displayTrackingId');
+        const timeline = document.getElementById('trackingTimeline');
+        const fromLoc = document.getElementById('fromLocation');
+        const toLoc = document.getElementById('toLocation');
+        const serviceType = document.getElementById('serviceType');
+        const expectedDelivery = document.getElementById('expectedDelivery');
+
+        const code = last.code;
+        if (code === 'IN_TRANSIT') {
+            statusIcon.className = 'status-icon status-in-transit';
+        } else if (code === 'DELIVERED') {
+            statusIcon.className = 'status-icon status-delivered';
+        } else {
+            statusIcon.className = 'status-icon status-pending';
+        }
+        statusTitle.textContent = last.label;
+        statusDesc.textContent = last.description || '';
+        displayTrackingId.textContent = order.trackingId;
+        fromLoc.textContent = order.route.from;
+        toLoc.textContent = order.route.to;
+        serviceType.textContent = order.service || '—';
+        expectedDelivery.textContent = order.expectedDelivery || '—';
+
+        timeline.innerHTML = '';
+        order.statuses.forEach((item, index) => {
+            const li = document.createElement('div');
+            li.className = 'timeline-item';
+            li.innerHTML = `
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-time">${new Date(item.time).toLocaleString()}</div>
+                    <div class="timeline-title">${item.label}</div>
+                    <div class="timeline-description">${item.description || ''}</div>
+                </div>
+            `;
+            timeline.appendChild(li);
+        });
+    }
+
+    window.loadTracking = function(id) {
+        fetchOrder(id).then(order => {
+            if (!order) {
+                alert('Tracking ID not found. Showing a demo timeline.');
+                order = getDemoOrder(id);
+            }
+            document.getElementById('trackingResult').style.display = 'block';
+            updateStatusDisplay(order);
+        });
+    };
+
+    window.startTracking = function() {
+        const trackingId = (document.getElementById('trackingId')?.value || '').trim().toUpperCase();
+        if (!trackingId) {
+            alert('Please enter a Tracking ID');
+            return;
+        }
+        localStorage.setItem('atz_last_tracking_id', trackingId);
+        loadTracking(trackingId);
+        const res = document.getElementById('trackingResult');
+        if (res) res.scrollIntoView({behavior:'smooth', block:'start'});
+    };
+
+    window.addEventListener('storage', (e)=>{
+        if (e.key && (e.key===STORE_KEY || e.key===STORE_KEY+'_ping')) {
+            const id = localStorage.getItem('atz_last_tracking_id') || (document.getElementById('trackingId')?.value||'').trim().toUpperCase();
+            if (id) loadTracking(id);
+        }
+    });
+    window.addEventListener('atz_store_update', ()=>{
+        const id = localStorage.getItem('atz_last_tracking_id') || (document.getElementById('trackingId')?.value||'').trim().toUpperCase();
+        if (id) loadTracking(id);
+    });
+    setInterval(()=>{
+        const id = localStorage.getItem('atz_last_tracking_id') || (document.getElementById('trackingId')?.value||'').trim().toUpperCase();
+        if (id) loadTracking(id);
+    }, 10000);
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+        const last = localStorage.getItem('atz_last_tracking_id');
+        if (last) {
+            const input = document.getElementById('trackingId');
+            if (input) input.value = last;
+            loadTracking(last);
+        }
+    });
+})();
+</script>
+
+<!-- Merged Fixes: WhatsApp formatting, auto-compose, button hardening, live sync -->
+<script>
 (function(){
-  const dbg = (msg)=>{ const el=document.getElementById('dbg'); if(el){ el.textContent = (el.textContent?el.textContent+"\n":"")+msg; } console.log(msg); };
+  if (window.__mergedFixes) return; window.__mergedFixes = true;
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAOCeCbqVvki8LN0LLQFNkLOwEoYer3EKQ",
-    authDomain: "a-to-z-packers-tracking-live.firebaseapp.com",
-    projectId: "a-to-z-packers-tracking-live",
-    storageBucket: "a-to-z-packers-tracking-live.firebasestorage.app",
-    messagingSenderId: "719198128823",
-    appId: "1:719198128823:web:d7ef4235dda458ff375b32",
-    measurementId: "G-B4KR2RETYR"
-  };
+  /* ===== Helpers ===== */
+  function $(sel, root){ return (root||document).querySelector(sel); }
+  function $all(sel, root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+  function toast(msg, ms){ try{ var t=document.getElementById('toast'); if(t){ t.textContent=msg; t.style.display='block'; setTimeout(function(){ t.style.display='none'; }, ms||1800); } }catch(e){} }
+  function todayISO(){ return new Date().toISOString(); }
+  function fmtShort(iso){ if(!iso) return '—'; var d=new Date(iso); var date=d.toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'}); var time=d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}); return date+', '+time; }
+  function normPhone(p){ if(!p) return ''; var d=String(p).replace(/\D/g,''); if(d.length===10) d='91'+d; return d; }
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db   = firebase.firestore();
-  dbg("Firebase loaded ✅");
-
-  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{ return auth.setPersistence(firebase.auth.Auth.Persistence.NONE); });
-
-  const $ = (id)=>document.getElementById(id);
-  const show=(el)=>{ if(el) el.style.display=""; };
-  const hide=(el)=>{ if(el) el.style.display="none"; };
-  const authErr = $("authError"), authOk = $("authOk");
-
-  function showErr(e){ const m = (e && (e.message||e.code)) || String(e); if(authErr){ authErr.textContent = "❌ "+m; show(authErr); } dbg("ERR: "+m); }
-  function showOk(m){ if(authOk){ authOk.textContent = "✅ "+m; show(authOk); } dbg("OK: "+m); }
-
-  function makeTrackingId(){
-    const now = new Date();
-    const p = new Intl.DateTimeFormat('en-IN',{day:'2-digit',month:'2-digit',year:'2-digit'}).format(now).replace(/\//g,'');
-    const rnd = Math.floor(1000+Math.random()*9000);
-    return `AZ${p}-${rnd}`;
+  /* ===== WhatsApp message builder (clean + emojis) ===== */
+  function buildWAHistory(statuses){
+    if(!Array.isArray(statuses)||!statuses.length) return 'No status yet.';
+    return statuses.map(function(s){ return '• '+(s.label||s.code||'—')+' — '+fmtShort(s.time); }).join('\n');
+  }
+  function cleanText(text){
+    return String(text||'')
+      .replace(/\\n\\*/g,'\n')
+      .replace(/\\\/n|\/n/g,'\n')
+      .replace(/[＊*]_?/g,'')
+      .replace(/[ \\t]+/g,' ')
+      .replace(/\n{3,}/g,'\n\n')
+      .trim();
+  }
+  function buildWAMessage(order, codeJustAdded, note){
+    if(codeJustAdded==='DELIVERED'){
+      return cleanText('✅📦 Your shipment '+(order.trackingId||'')+' has been delivered.\n🙏 Thank you for choosing A to Z Packers & Movers!');
+    }
+    var lines=[
+      '📦 A to Z Packers & Movers – Update','',
+      '🔎 Tracking: '+(order.trackingId||'—'),
+      '👤 Customer: '+(order.customer&&order.customer.name||'—')+' ('+(order.customer&&order.customer.phone||'—')+')',
+      '📍 Route: '+(order.route&&order.route.from||'—')+' → '+(order.route&&order.route.to||'—'),
+      '📅 Pickup: '+(order.pickupDate||'—')+' | ⏰ ETA: '+(order.expectedDelivery||'—'),
+      '',
+      '✅ Current Status: '+((order.statuses&&order.statuses[order.statuses.length-1]||{}).label||'—'),
+      '',
+      '📝 History:',
+      buildWAHistory(order.statuses||[]),
+      '',
+      '🗒️ Note: '+(note && String(note).trim() ? String(note).trim() : '—')
+    ];
+    return cleanText(lines.join('\n'));
+  }
+  function openWhatsAppToParty(order, codeJustAdded, note){
+    try{
+      var raw = order && order.customer ? order.customer.phone : '';
+      var phone = normPhone(raw);
+      if(!phone){ toast && toast('Party phone missing'); return; }
+      var message = buildWAMessage(order, codeJustAdded, note);
+      var encoded = encodeURIComponent(message);
+      var taken = false;
+      function vis(){ taken=true; document.removeEventListener('visibilitychange', vis); }
+      document.addEventListener('visibilitychange', vis);
+      try{ window.location.href = 'whatsapp://send?phone='+phone+'&text='+encoded; }catch(e){}
+      setTimeout(function(){
+        if(!taken){ window.open('https://wa.me/'+phone+'?text='+encoded, '_blank'); }
+        document.removeEventListener('visibilitychange', vis);
+      }, 600);
+    }catch(err){ console.error('WA open failed', err); }
   }
 
-  const nextTid = makeTrackingId();
-  $("autoTid").textContent = nextTid;
-  $("updTid").value = nextTid;
-
-  $("loginForm").addEventListener("submit", async (e)=>{
-    e.preventDefault(); hide(authErr); hide(authOk);
+  function getFromLocal(trackingId){
     try{
-      await auth.signInWithEmailAndPassword($("email").value.trim(), $("password").value);
-      showOk("Signed in successfully");
-    }catch(err){ showErr(err); }
-  });
+      var dict = JSON.parse(localStorage.getItem('orders')||'{}');
+      return dict[trackingId] || null;
+    }catch(e){ return null; }
+  }
 
-  $("btnSignOut").addEventListener("click", async ()=>{
-    hide(authErr); hide(authOk);
-    try{ await auth.signOut(); $("authState").textContent="Not signed in"; showOk("Signed out"); }
-    catch(err){ showErr(err); }
-  });
+  (function hookAddStatus(){
+    var orig = window.addStatus;
+    if (typeof orig === 'function'){
+      window.addStatus = function(trackingId, code, customLabel, note){
+        var ret = orig.apply(this, arguments);
+        try{
+          if (ret && typeof ret.then === 'function'){
+            return ret.then(function(res){
+              var order = (res && res.order) ? res.order : null;
+              if(!order){
+                var resolver = window.dbGet ? window.dbGet(trackingId) : Promise.resolve(getFromLocal(trackingId));
+                return Promise.resolve(resolver).then(function(o){ if(o) openWhatsAppToParty(o, code, note); return res; });
+              } else {
+                openWhatsAppToParty(order, code, note);
+                return res;
+              }
+            });
+          }else{
+            var resolver2 = window.dbGet ? window.dbGet(trackingId) : Promise.resolve(getFromLocal(trackingId));
+            Promise.resolve(resolver2).then(function(o){ if(o) openWhatsAppToParty(o, code, note); });
+            return ret;
+          }
+        }catch(err){ console.error('Hook addStatus error', err); return ret; }
+      };
+      console.log('[MergedFixes] addStatus hook attached.');
+    } else {
+      console.warn('[MergedFixes] addStatus not found; exposing helper sendWhatsAppFromOrder(trackingId, code, note).');
+      window.sendWhatsAppFromOrder = function(trackingId, code, note){
+        var resolver3 = window.dbGet ? window.dbGet(trackingId) : Promise.resolve(getFromLocal(trackingId));
+        Promise.resolve(resolver3).then(function(o){ if(o) openWhatsAppToParty(o, code, note); else alert('Order not found for WhatsApp'); });
+      };
+    }
+  })();
 
-  auth.onAuthStateChanged((user)=>{ if(user){ $("authState").textContent = "Signed in"; $("adminPanel").classList.remove("hide"); } else { $("authState").textContent = "Not signed in"; $("adminPanel").classList.add("hide"); } });
+  (function wireUI(){
+    if (window.__uiWired) return; window.__uiWired = true;
+    document.addEventListener('DOMContentLoaded', function(){
+      $all('form button:not([type])').forEach(function(btn){ btn.setAttribute('type','button'); });
+      $all('a[href=\"#\"]').forEach(function(a){ a.setAttribute('role','button'); a.addEventListener('click', function(e){ e.preventDefault(); }, {passive:false}); });
+    });
 
-  $("btnCreate").addEventListener("click", async ()=>{
-    const user = auth.currentUser; if(!user){ return showErr("Please sign in first."); }
-    const name = $("custName").value.trim(), contact = $("custContact").value.trim(), from = $("fromCity").value.trim(), to = $("toCity").value.trim(), tid = $("autoTid").textContent.trim();
-    if(!name || !contact || !from || !to){ return showErr("Please fill all order fields."); }
-    try{
-      await db.collection("Orders").doc(tid).set({ Name:name, Contact:contact, From:from, To:to, CreatedAt: firebase.firestore.Timestamp.now(), Status:[{ Text:"Booked", Ts: firebase.firestore.Timestamp.now() }] });
-      $("updTid").value = tid; showOk("Order saved with Tracking ID: "+tid);
-    }catch(err){ showErr(err); }
-  });
+    document.addEventListener('click', function(e){
+      var el = e.target.closest('[data-action],button,a,[role=\"button\"]');
+      if(!el) return;
+      var act = el.getAttribute('data-action');
+      if(el.tagName==='A' && el.getAttribute('href')==='#'){ e.preventDefault(); }
+      if(!act) return;
+      try {
+        switch(act){
+          case 'switch-tab':
+            var tab = el.getAttribute('data-tab');
+            var home = document.getElementById('home');
+            var admin= document.getElementById('admin');
+            if(home && admin){
+              $all('.tab').forEach(function(b){ b.classList.remove('active'); });
+              el.classList.add('active');
+              home.classList.toggle('hidden', tab!=='home');
+              admin.classList.toggle('hidden', tab!=='admin');
+            }
+            break;
+          case 'track':
+            var input = document.getElementById('trackInput');
+            var id = input ? String(input.value||'').trim() : '';
+            if(!id){ toast('Enter a Tracking ID'); break; }
+            if(typeof window.dbGet==='function' && typeof window.renderTimeline==='function'){
+              window.dbGet(id).then(window.renderTimeline);
+            }
+            break;
+          case 'open-track':
+            var tid = el.getAttribute('data-id');
+            var ti = document.getElementById('trackInput'); if(ti && tid){ ti.value=tid; }
+            if(typeof window.dbGet==='function' && typeof window.renderTimeline==='function'){
+              window.dbGet(tid).then(window.renderTimeline);
+            }
+            break;
+        }
+      } catch(err){
+        console.error('Delegated router error', err);
+      }
+    }, {passive:false});
+  })();
 
-  $("btnAddStatus").addEventListener("click", async ()=>{
-    const user = auth.currentUser; if(!user){ return showErr("Please sign in first."); }
-    const tid = $("updTid").value.trim(), text = $("updStatus").value, items = $("updItems").value.trim(), expected = $("updExpected").value;
-    if(!tid){ return showErr("Enter Tracking ID."); }
-    try{
-      const ref = db.collection("Orders").doc(tid); const snap = await ref.get();
-      if(!snap.exists){ return showErr("No such order."); }
-      await ref.update({ Status: firebase.firestore.FieldValue.arrayUnion({ Text:text, Items:items, Expected:expected, Ts: firebase.firestore.Timestamp.now() }) });
-      $("adminHint").textContent = `Added "${text}" at ${new Date().toLocaleString()}`; showOk("Status added.");
-    }catch(err){ showErr(err); }
-  });
+  (function ensureToast(){
+    if (!document.getElementById('toast')){
+      var t = document.createElement('div');
+      t.id='toast'; t.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,.2);z-index:9999;display:none';
+      document.body.appendChild(t);
+    }
+  })();
 
-  $("btnTrack").addEventListener("click", async ()=>{
-    const tid = $("trackInput").value.trim(); if(!tid){ return showErr("Enter Tracking ID."); }
-    try{
-      const snap = await db.collection("Orders").doc(tid).get();
-      if(!snap.exists){ $("result").classList.add("hide"); $("noResult").classList.remove("hide"); return; }
-      $("noResult").classList.add("hide"); $("result").classList.remove("hide");
-      const d = snap.data(); $("rName").textContent = d.Name || "-"; $("rContact").textContent = d.Contact || "-"; $("rTid").textContent = tid; $("rRoute").textContent = `${d.From || "-"} → ${d.To || "-"}`;
-      const tl = $("rTimeline"); tl.innerHTML = "";
-      (d.Status||[]).sort((a,b)=>(a.Ts?.seconds||0)-(b.Ts?.seconds||0)).forEach(i=>{
-        const div = document.createElement("div"); div.className="timeitem";
-        div.innerHTML = `<div class="dot"></div><div style="font-weight:600">${i.Text||"-"}</div><div class="muted">${i.Ts? i.Ts.toDate().toLocaleString():""}</div>${i.Items? `<div>🗂 Items: ${i.Items}</div>`:""}${i.Expected? `<div>📅 Expected Delivery: ${i.Expected}</div>`:""}`;
-        tl.appendChild(div);
-      });
-    }catch(err){ showErr(err); }
-  });
-
-  dbg("JS ready 🚀");
+  window.addEventListener('error', function(e){ console.error('[MergedFixes JS Error]:', e.message, e.filename, e.lineno); });
+  console.log('[MergedFixes] Patch loaded.');
 })();
 </script>
 </body>
