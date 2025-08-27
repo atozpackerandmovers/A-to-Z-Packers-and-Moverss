@@ -3,143 +3,67 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>A to Z — Fault → Training Flow (Single-File)</title>
-
-<!-- 100% self-contained: no external CSS/JS/CDN required -->
+<title>A to Z — Fault → Training (Working Minimal)</title>
 <style>
-  :root{
-    --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f7f8fb; --white:#fff;
-    --brand:#1e3a8a; --ok:#16a34a; --warn:#d97706; --err:#dc2626;
-  }
+  :root{--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--bg:#f7f8fb;--brand:#1e3a8a;--ok:#16a34a;--warn:#d97706}
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-  .wrap{max-width:1100px;margin:0 auto;padding:14px}
   header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:10}
-  .hrow{display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
-  .brand{display:flex;align-items:center;gap:10px}
-  .logo{width:36px;height:36px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800}
-  .tt{line-height:1}
-  .tt b{display:block;font-size:16px}
-  .tt span{display:block;font-size:12px;color:var(--muted)}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .wrap{max-width:1024px;margin:0 auto;padding:12px}
+  .hrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0}
+  .logo{display:flex;align-items:center;gap:8px}
+  .badge{width:36px;height:36px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800}
+  .tt b{display:block;font-size:16px} .tt span{display:block;font-size:12px;color:var(--muted)}
   .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
-  .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
-  .btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
-  .btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
-  .btn.ghost{background:#fff}
+  .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .btn.warn{background:var(--warn);color:#fff;border-color:var(--warn)}
+  .btn.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
   .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
-  h2{margin:0 0 8px;font-size:18px}
-  h3{margin:0 0 6px;font-size:16px}
+  h2{margin:0 0 8px;font-size:18px} h3{margin:0 0 6px;font-size:16px}
   label{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
   input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;margin-top:4px;font:inherit}
   textarea{resize:vertical}
-  .grid{display:grid;gap:12px}
-  .g2{grid-template-columns:repeat(2,1fr)}
-  @media (max-width:840px){.g2{grid-template-columns:1fr}}
-  .pill{display:inline-block;padding:3px 10px;border-radius:999px;background:#eef2ff;color:#1e1b4b;font-size:12px}
-  .mono{font-family:ui-monospace,Consolas,monospace}
-  .muted{color:var(--muted)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .grid{display:grid;gap:12px} .g2{grid-template-columns:repeat(2,1fr)} @media(max-width:820px){.g2{grid-template-columns:1fr}}
   .list{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+  .pill{display:inline-block;background:#eef2ff;color:#1e1b4b;border-radius:999px;padding:3px 10px;font-size:12px;margin-top:6px}
+  .muted{color:var(--muted)} .mono{font-family:ui-monospace,Consolas,monospace}
   .hidden{display:none !important}
-  .ck{display:flex;gap:8px;align-items:center;margin-top:6px}
-  .hr{height:1px;background:var(--line);margin:12px 0}
-  .kpis{display:grid;gap:10px;grid-template-columns:repeat(4,1fr)}
-  @media (max-width:880px){.kpis{grid-template-columns:repeat(2,1fr)}}
-  @media (max-width:520px){.kpis{grid-template-columns:1fr}}
-  .kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
-  .kpi .big{font-size:26px;font-weight:800}
-  .status{font-size:12px;border:1px solid var(--line);padding:4px 8px;border-radius:8px}
-  .status.pending{background:#fff7ed;color:#7c2d12;border-color:#fed7aa}
-  .status.progress{background:#ecfeff;color:#083344;border-color:#a5f3fc}
-  .status.training{background:#eef2ff;color:#1e1b4b;border-color:#c7d2fe}
-  .status.impl{background:#ecfdf5;color:#064e3b;border-color:#bbf7d0}
-  .status.closed{background:#f0f9ff;color:#0c4a6e;border-color:#bae6fd}
+  .hr{height:1px;background:var(--line);margin:10px 0}
+  .status{font-size:12px;border:1px solid var(--line);padding:3px 8px;border-radius:8px}
 </style>
 </head>
 <body>
 <header>
-  <div class="hrow">
-    <div class="brand">
-      <div class="logo">A-Z</div>
-      <div class="tt"><b>Fault → Training Flow</b><span>A to Z Packers & Movers • Internal</span></div>
+  <div class="wrap hrow">
+    <div class="logo">
+      <div class="badge">A-Z</div>
+      <div class="tt"><b>Fault → Training Flow</b><span>Single-file • localStorage</span></div>
     </div>
     <div class="row">
       <button id="btnExport" class="btn">Export</button>
-      <label class="btn">
-        <input id="importFile" type="file" accept="application/json" style="display:none"> Import
-      </label>
+      <label class="btn"><input id="importFile" type="file" accept="application/json" style="display:none">Import</label>
       <a class="btn primary" target="_blank" href="https://wa.me/919338888550">WhatsApp Boss</a>
     </div>
   </div>
 </header>
 
-<div class="wrap" id="app">
-
-  <!-- KPIs -->
-  <section class="kpis">
-    <div class="kpi">
-      <div class="muted">Open Faults</div>
-      <div id="kpiOpen" class="big">0</div>
-    </div>
-    <div class="kpi">
-      <div class="muted">In Training</div>
-      <div id="kpiTrain" class="big">0</div>
-    </div>
-    <div class="kpi">
-      <div class="muted">Implemented</div>
-      <div id="kpiImpl" class="big">0</div>
-    </div>
-    <div class="kpi">
-      <div class="muted">Closed Today</div>
-      <div id="kpiClosed" class="big">0</div>
-    </div>
-  </section>
-
-  <!-- 1) LOG FAULT -->
+<main class="wrap">
+  <!-- 1) Log Fault -->
   <section class="card">
     <h2>1) 🚨 Log New Fault</h2>
     <div class="grid g2">
-      <div>
-        <label>Fault Title</label>
-        <input id="f_title" placeholder="e.g., Driver not wearing uniform">
+      <div><label>Fault Title</label><input id="f_title" placeholder="e.g., Driver not wearing uniform"></div>
+      <div><label>Date</label><input id="f_date" type="date"></div>
+      <div><label>Category</label>
+        <select id="f_cat"><option>Operations</option><option>Customer</option><option>Technical</option><option>Vehicle</option><option>Staff</option><option>Documentation</option><option>Other</option></select>
       </div>
-      <div>
-        <label>Date</label>
-        <input id="f_date" type="date">
-      </div>
-      <div>
-        <label>Category</label>
-        <select id="f_cat">
-          <option>Operations</option><option>Customer</option><option>Technical</option>
-          <option>Vehicle</option><option>Staff</option><option>Documentation</option><option>Other</option>
-        </select>
-      </div>
-      <div>
-        <label>Impact</label>
-        <select id="f_impact"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
-      </div>
-      <div>
-        <label>Tracking / Job ID (optional)</label>
-        <input id="f_track" placeholder="AZ-2025-0001">
-      </div>
-      <div>
-        <label>Involved Staff (comma separated name:phone)</label>
-        <input id="f_staff" placeholder="Sanjay:933xxxxxxx, Dhaneswar:9xxxxxxxxx">
-      </div>
-      <div>
-        <label>Vehicle (optional)</label>
-        <input id="f_vehicle" placeholder="OD 05 BS 8855">
-      </div>
-      <div>
-        <label>Expected Delivery (optional)</label>
-        <input id="f_edd" placeholder="YYYY-MM-DD">
-      </div>
-      <div class="g2" style="grid-column:1/-1">
-        <div style="grid-column:1/-1">
-          <label>Description</label>
-          <textarea id="f_desc" rows="3" placeholder="What happened? Root cause if known."></textarea>
-        </div>
-      </div>
+      <div><label>Impact</label><select id="f_impact"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div>
+      <div><label>Tracking / Job ID (optional)</label><input id="f_track" placeholder="AZ-2025-0001"></div>
+      <div><label>Involved Staff (name:phone, comma separated)</label><input id="f_staff" placeholder="Sanjay:933xxxxxxx, Saroj:9xxxxxxxxx"></div>
+      <div><label>Vehicle (optional)</label><input id="f_vehicle" placeholder="OD 05 BS 8855"></div>
+      <div><label>Expected Delivery (optional)</label><input id="f_edd" placeholder="YYYY-MM-DD"></div>
+      <div style="grid-column:1/-1"><label>Description</label><textarea id="f_desc" rows="3" placeholder="What happened? Root cause if known."></textarea></div>
     </div>
     <div class="row" style="margin-top:10px">
       <button id="btnSuggest" class="btn warn">🤖 AI — Suggest Solution & Training</button>
@@ -147,98 +71,294 @@
     </div>
   </section>
 
-  <!-- 2) AI SUGGESTION -->
+  <!-- 2) AI Suggestion -->
   <section id="aiBox" class="card hidden">
     <h2>2) 🤖 AI Suggested Plan (Editable)</h2>
-    <div class="grid g2">
-      <div style="grid-column:1/-1">
-        <label>AI Suggested Solution (with emojis)</label>
-        <textarea id="ai_solution" rows="4"></textarea>
-      </div>
-      <div style="grid-column:1/-1">
-        <label>AI Suggested Training Steps</label>
-        <textarea id="ai_training" rows="5"></textarea>
-      </div>
-    </div>
+    <label>AI Suggested Solution (with emojis)</label>
+    <textarea id="ai_solution" rows="4"></textarea>
+    <label style="margin-top:8px">AI Suggested Training Steps</label>
+    <textarea id="ai_training" rows="5"></textarea>
     <div class="row" style="margin-top:10px">
       <button id="btnUseAI" class="btn ok">✅ Use This Plan</button>
-      <button id="btnHideAI" class="btn ghost">Cancel</button>
+      <button id="btnHideAI" class="btn">Cancel</button>
     </div>
   </section>
 
-  <!-- 3) NOTIFICATIONS -->
+  <!-- 3) Notifications -->
   <section class="card">
     <h2>3) 📩 Notifications (Optional)</h2>
-    <div class="ck"><input id="n_sms" type="checkbox"><label for="n_sms">Send SMS to involved staff</label></div>
-    <div class="ck"><input id="n_mail1" type="checkbox" checked><label for="n_mail1">Email to <b>info@atozpackersmovers.in</b></label></div>
-    <div class="ck"><input id="n_mail2" type="checkbox" checked><label for="n_mail2">Email to <b>manojgatibbi506@gmail.com</b></label></div>
+    <div class="row"><input id="n_sms" type="checkbox"><label for="n_sms">Send SMS to involved staff</label></div>
+    <div class="row"><input id="n_mail1" type="checkbox" checked><label for="n_mail1">Email to info@atozpackersmovers.in</label></div>
+    <div class="row"><input id="n_mail2" type="checkbox" checked><label for="n_mail2">Email to manojgatibbi506@gmail.com</label></div>
   </section>
 
-  <!-- 4) CONVERT TO TRAINING -->
+  <!-- 4) Training -->
   <section class="card">
     <h2>4) 🎓 Convert to Training & Assign</h2>
     <div class="grid g2">
-      <div>
-        <label>Trainer Responsible</label>
-        <select id="t_trainer">
-          <option value="Kaviraj">Kaviraj</option>
-          <option value="Manoranjan">Manoranjan</option>
-          <option value="Toofan">Toofan</option>
-          <option value="Saroj">Saroj</option>
-        </select>
+      <div><label>Trainer Responsible</label>
+        <select id="t_trainer"><option>Kaviraj</option><option>Manoranjan</option><option>Toofan</option><option>Saroj</option></select>
       </div>
-      <div>
-        <label>Training Date</label>
-        <input id="t_date" type="date">
-      </div>
-      <div style="grid-column:1/-1">
-        <label>Training Agenda (editable)</label>
-        <textarea id="t_agenda" rows="4" placeholder="Steps, demo items, handouts, proof to collect..."></textarea>
-      </div>
-      <div style="grid-column:1/-1">
-        <label>Implementation Checklist (what proof will we collect?)</label>
-        <textarea id="t_impl" rows="3" placeholder="e.g., Uniform check-in photo daily for 3 days; TV packing 3-layer photo; vehicle service job card..."></textarea>
-      </div>
+      <div><label>Training Date</label><input id="t_date" type="date"></div>
+      <div style="grid-column:1/-1"><label>Training Agenda (editable)</label><textarea id="t_agenda" rows="3" placeholder="Steps, demo items, handouts, proof to collect..."></textarea></div>
+      <div style="grid-column:1/-1"><label>Implementation Checklist (proof to collect)</label><textarea id="t_impl" rows="3" placeholder="e.g., Uniform selfie for 3 days; TV 3-layer packing photo; job card, etc."></textarea></div>
     </div>
     <div class="row" style="margin-top:10px">
       <button id="btnCreateTraining" class="btn primary">Create Training Task</button>
     </div>
   </section>
 
-  <!-- 5) IMPLEMENTATION & CLOSE -->
+  <!-- 5) Close -->
   <section class="card">
     <h2>5) ✅ Implementation & Close Fault</h2>
-    <div class="ck"><input id="c_train" type="checkbox"><label for="c_train">Training delivered (proof uploaded)</label></div>
-    <div class="ck"><input id="c_impl" type="checkbox"><label for="c_impl">Implementation confirmed (evidence collected)</label></div>
-    <div class="ck"><input id="c_smooth" type="checkbox"><label for="c_smooth">Supervisor: working smoothly</label></div>
-    <div class="row" style="margin-top:10px">
-      <button id="btnClose" class="btn ok">🚀 Close Fault</button>
-    </div>
+    <div class="row"><input id="c_train" type="checkbox"><label for="c_train">Training delivered (proof uploaded)</label></div>
+    <div class="row"><input id="c_impl" type="checkbox"><label for="c_impl">Implementation confirmed (evidence collected)</label></div>
+    <div class="row"><input id="c_smooth" type="checkbox"><label for="c_smooth">Supervisor: working smoothly</label></div>
+    <div class="row" style="margin-top:10px"><button id="btnClose" class="btn ok">🚀 Close Fault</button></div>
   </section>
 
-  <!-- ACTIVE RECORD -->
+  <!-- Active Record -->
   <section id="activeRec" class="card hidden">
     <h2>Active Fault</h2>
     <div id="activeSummary" class="muted"></div>
   </section>
 
-  <!-- LISTS -->
+  <!-- Lists -->
   <section class="card">
     <h2>📋 All Faults & Trainings</h2>
     <div id="lists" class="list"></div>
   </section>
-
-</div>
+</main>
 
 <script>
-/* ----------------- Storage / State ----------------- */
-const LS = "az_fault_training_v1";
-let DB = load() || { faults: [], trainings: [] };
-let ACTIVE_ID = null;
-function load(){ try{return JSON.parse(localStorage.getItem(LS)||"")}catch{return null} }
-function save(){ localStorage.setItem(LS, JSON.stringify(DB)) }
+document.addEventListener('DOMContentLoaded', () => {
+  /* ======= State / Storage ======= */
+  const LS = 'az_fault_training_v2_min';
+  let DB = load() || { faults: [], trainings: [] };
+  let ACTIVE_ID = null;
 
-/* ----------------- Utils ----------------- */
+  function load(){ try{ return JSON.parse(localStorage.getItem(LS) || '') }catch{ return null } }
+  function save(){ localStorage.setItem(LS, JSON.stringify(DB)) }
+
+  /* ======= Helpers ======= */
+  const $ = (s) => document.querySelector(s);
+  const today = () => new Date().toISOString().slice(0,10);
+  const nowISO = () => new Date().toISOString();
+  const uid = (p='F') => p + Math.random().toString(36).slice(2,8).toUpperCase();
+  const parseStaff = (s) => (s||'').split(',').map(x=>x.trim()).filter(Boolean).map(p=>{
+    const [name, phone] = p.split(':').map(y=>y.trim());
+    return {name, phone};
+  });
+
+  /* ======= Elements ======= */
+  const els = {
+    // fault form
+    f_title: $('#f_title'), f_date: $('#f_date'), f_cat: $('#f_cat'), f_impact: $('#f_impact'),
+    f_track: $('#f_track'), f_staff: $('#f_staff'), f_vehicle: $('#f_vehicle'), f_edd: $('#f_edd'), f_desc: $('#f_desc'),
+    btnSuggest: $('#btnSuggest'), btnSaveFault: $('#btnSaveFault'),
+    // AI box
+    aiBox: $('#aiBox'), ai_solution: $('#ai_solution'), ai_training: $('#ai_training'), btnUseAI: $('#btnUseAI'), btnHideAI: $('#btnHideAI'),
+    // notifications
+    n_sms: $('#n_sms'), n_mail1: $('#n_mail1'), n_mail2: $('#n_mail2'),
+    // training
+    t_trainer: $('#t_trainer'), t_date: $('#t_date'), t_agenda: $('#t_agenda'), t_impl: $('#t_impl'), btnCreateTraining: $('#btnCreateTraining'),
+    // close
+    c_train: $('#c_train'), c_impl: $('#c_impl'), c_smooth: $('#c_smooth'), btnClose: $('#btnClose'),
+    // lists + active
+    lists: $('#lists'), activeRec: $('#activeRec'), activeSummary: $('#activeSummary'),
+    // import/export
+    btnExport: $('#btnExport'), importFile: $('#importFile'),
+  };
+
+  // Init dates
+  els.f_date.value = today(); els.t_date.value = today();
+
+  /* ======= AI Suggestion (offline mock) ======= */
+  function aiSuggest(title, desc){
+    const txt = `${title} ${desc}`.toLowerCase();
+    if(/uniform|dress|code/.test(txt)){
+      return {
+        sol: "👕 Ensure uniform issued to all duty staff.\n📸 Daily check-in selfie in uniform.\n🚫 Penalty ₹100 for non-compliance.\n🧾 Supervisor verifies at shift start.",
+        trn: "1) 📖 Explain uniform policy & penalties.\n2) 👕 Demo proper uniform standard.\n3) 📸 Train on check-in selfie process.\n4) 📝 Acknowledge + monitor 3 days."
+      };
+    }
+    if(/breakdown|puncture|engine|vehicle/.test(txt)){
+      return {
+        sol: "🆘 Call nearest garage; inform control room.\n🔁 Dispatch backup vehicle if delay > 1 hr.\n📣 Notify customer with revised ETA.\n🧰 Log issue for preventive maintenance.",
+        trn: "1) 🔧 Breakdown SOP.\n2) ☎️ Escalation & customer script.\n3) 📝 Maintenance log discipline.\n4) 🚛 Backup readiness."
+      };
+    }
+    if(/delay|late|eta/.test(txt)){
+      return {
+        sol: "⏱️ Share realistic ETA quickly.\n🚚 Arrange backup if needed.\n🛣️ Optimize route & toll balance.\n📝 Record cause to prevent repeat.",
+        trn: "1) 🗺️ Route planning basics.\n2) 📞 ETA call script.\n3) 🧰 Contingency planning.\n4) 📊 Post-trip delay review."
+      };
+    }
+    return {
+      sol: "🧭 Find root cause.\n✅ Apply quick corrective action.\n🔁 Add a preventive step.\n📣 Inform stakeholders as needed.",
+      trn: "1) 🧠 Root-cause basics.\n2) 📋 Relevant SOP recap.\n3) 🧰 Tools/materials checklist.\n4) 🔄 Follow-up + proof."
+    };
+  }
+
+  /* ======= UI Render ======= */
+  function renderLists(){
+    const html = DB.faults.slice().reverse().map(f=>{
+      const staffStr = (f.staff||[]).map(s=>s.name + (s.phone?` (${s.phone})`:``)).join(', ') || '—';
+      const tr = DB.trainings.find(x=>x.faultId===f.id);
+      return `
+        <div class="card">
+          <div class="row" style="justify-content:space-between;align-items:flex-start">
+            <div>
+              <div class="mono muted" style="font-size:12px">${f.date} • <b>${f.id}</b></div>
+              <div style="font-weight:700;margin-top:4px">${f.title||'(Untitled)'}</div>
+              <div class="muted" style="margin-top:2px">${f.category} • Impact ${f.impact} • <span class="status">${f.status}</span></div>
+              <div style="margin-top:6px">${f.desc||''}</div>
+              <div class="row" style="margin-top:6px">
+                ${f.track?`<span class="pill">Tracking: ${f.track}</span>`:''}
+                ${f.vehicle?`<span class="pill">Vehicle: ${f.vehicle}</span>`:''}
+                ${f.edd?`<span class="pill">EDD: ${f.edd}</span>`:''}
+                <span class="pill">Staff: ${staffStr}</span>
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn btn-open" data-id="${f.id}">Open</button>
+            </div>
+          </div>
+          <div class="hr"></div>
+          <div>
+            <div class="muted" style="font-size:12px">Solution</div>
+            <div style="white-space:pre-wrap">${f.solution || '—'}</div>
+            <div class="muted" style="font-size:12px;margin-top:8px">Training</div>
+            <div style="white-space:pre-wrap">${f.training || '—'}</div>
+            ${tr ? `<div class="row" style="margin-top:8px"><span class="pill">Trainer: ${tr.trainer}</span><span class="pill">Date: ${tr.date||'—'}</span></div>` : ``}
+          </div>
+        </div>
+      `;
+    }).join('') || `<div class="muted">No records yet.</div>`;
+    els.lists.innerHTML = html;
+
+    // Wire "Open" buttons
+    document.querySelectorAll('.btn-open').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        ACTIVE_ID = b.getAttribute('data-id');
+        showActive();
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    });
+  }
+
+  function showActive(){
+    const f = DB.faults.find(x=>x.id===ACTIVE_ID);
+    if(!f){ els.activeRec.classList.add('hidden'); return; }
+    const staffStr = (f.staff||[]).map(s=>s.name + (s.phone?` (${s.phone})`:``)).join(', ') || '—';
+    els.activeSummary.innerHTML = `
+      <div class="mono muted" style="font-size:12px">${f.date} • <b>${f.id}</b></div>
+      <div style="font-weight:700;margin-top:2px">${f.title}</div>
+      <div class="muted" style="margin-top:2px">${f.category} • Impact ${f.impact} • <span class="status">${f.status}</span></div>
+      <div style="margin-top:6px">${f.desc || ''}</div>
+      <div class="row" style="margin-top:6px">
+        ${f.track?`<span class="pill">Tracking: ${f.track}</span>`:''}
+        ${f.vehicle?`<span class="pill">Vehicle: ${f.vehicle}</span>`:''}
+        ${f.edd?`<span class="pill">EDD: ${f.edd}</span>`:''}
+        <span class="pill">Staff: ${staffStr}</span>
+      </div>
+    `;
+    els.activeRec.classList.remove('hidden');
+  }
+
+  /* ======= Events (SAFE-WIRED) ======= */
+
+  // AI suggest
+  els.btnSuggest.addEventListener('click', ()=>{
+    const m = aiSuggest(els.f_title.value||'', els.f_desc.value||'');
+    els.ai_solution.value = m.sol;
+    els.ai_training.value = m.trn;
+    els.aiBox.classList.remove('hidden');
+  });
+
+  els.btnHideAI.addEventListener('click', ()=> els.aiBox.classList.add('hidden'));
+  els.btnUseAI.addEventListener('click', ()=> els.aiBox.classList.add('hidden'));
+
+  // Save fault
+  els.btnSaveFault.addEventListener('click', ()=>{
+    const rec = {
+      id: uid('F'),
+      date: els.f_date.value || today(),
+      title: (els.f_title.value||'').trim(),
+      category: els.f_cat.value,
+      impact: els.f_impact.value,
+      track: (els.f_track.value||'').trim(),
+      vehicle: (els.f_vehicle.value||'').trim(),
+      edd: (els.f_edd.value||'').trim(),
+      staff: parseStaff(els.f_staff.value),
+      desc: (els.f_desc.value||'').trim(),
+      solution: (els.ai_solution.value||'').trim(),
+      training: (els.ai_training.value||'').trim(),
+      status: 'Pending',
+      notify: { sms: els.n_sms.checked, mail1: els.n_mail1.checked, mail2: els.n_mail2.checked },
+      createdAt: nowISO()
+    };
+    DB.faults.push(rec); save();
+    ACTIVE_ID = rec.id; showActive(); renderLists();
+    alert('Fault saved (demo: notifications simulated).');
+  });
+
+  // Create training
+  els.btnCreateTraining.addEventListener('click', ()=>{
+    if(!ACTIVE_ID){ alert('Open or create a fault first.'); return; }
+    const fault = DB.faults.find(x=>x.id===ACTIVE_ID);
+    // Update texts from AI (if edited later)
+    fault.solution = (els.ai_solution.value||fault.solution||'').trim();
+    fault.training = (els.ai_training.value||fault.training||'').trim();
+
+    DB.trainings = DB.trainings.filter(x=>x.faultId!==ACTIVE_ID);
+    DB.trainings.push({
+      id: uid('T'), faultId: ACTIVE_ID, trainer: els.t_trainer.value,
+      date: els.t_date.value || today(), agenda: (els.t_agenda.value||'').trim(),
+      impl: (els.t_impl.value||'').trim(), createdAt: nowISO()
+    });
+    fault.status = 'Training';
+    save(); renderLists(); showActive();
+    alert('Training task created & trainer assigned (demo).');
+  });
+
+  // Close
+  els.btnClose.addEventListener('click', ()=>{
+    if(!ACTIVE_ID){ alert('Open or create a fault first.'); return; }
+    if(!els.c_train.checked || !els.c_impl.checked || !els.c_smooth.checked){
+      alert('Tick all: training delivered, implementation confirmed, smooth working.');
+      return;
+    }
+    const fault = DB.faults.find(x=>x.id===ACTIVE_ID);
+    fault.status = 'Closed'; fault.closedAt = nowISO();
+    save(); renderLists(); showActive();
+    alert('Fault closed (demo).');
+  });
+
+  // Export
+  els.btnExport.addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify(DB,null,2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'az-fault-training-export.json'; a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  // Import
+  els.importFile.addEventListener('change', async (e)=>{
+    const file = e.target.files?.[0]; if(!file) return;
+    try{
+      const text = await file.text(); const json = JSON.parse(text);
+      if(json && json.faults && json.trainings){ DB = json; save(); renderLists(); showActive(); alert('Imported.'); }
+      else alert('Invalid file.');
+    }catch{ alert('Could not import.'); }
+  });
+
+  // First render
+  renderLists();
+});
+</script>
+</body>
+</html>------------- Utils ----------------- */
 const $ = s => document.querySelector(s);
 const nowISO = () => new Date().toISOString();
 const today = () => new Date().toISOString().slice(0,10);
@@ -459,4 +579,5 @@ $('#btnCreateTraining').addEventListener('click', ()=>{
 $('#btnClose').addEventListener('click', ()=>{
   if(!ACTIVE_ID){ alert("Open or create a fault first."); return; }
   const fault = DB.faults.find(x=>x.id===ACTIVE_ID);
+
   if(!closeCk.train.checked || !closeCk.impl.checked || !closeC
