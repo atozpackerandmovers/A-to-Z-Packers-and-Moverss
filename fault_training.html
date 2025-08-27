@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>A to Z — Fault → Training Flow (Single-File)</title>
+
+<!-- 100% self-contained: no external CSS/JS/CDN required -->
+<style>
+  :root{
+    --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f7f8fb; --white:#fff;
+    --brand:#1e3a8a; --ok:#16a34a; --warn:#d97706; --err:#dc2626;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1100px;margin:0 auto;padding:14px}
+  header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:10}
+  .hrow{display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:36px;height:36px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800}
+  .tt{line-height:1}
+  .tt b{display:block;font-size:16px}
+  .tt span{display:block;font-size:12px;color:var(--muted)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+  .btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+  .btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
+  .btn.ghost{background:#fff}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+  h2{margin:0 0 8px;font-size:18px}
+  h3{margin:0 0 6px;font-size:16px}
+  label{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
+  input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;margin-top:4px;font:inherit}
+  textarea{resize:vertical}
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:840px){.g2{grid-template-columns:1fr}}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;background:#eef2ff;color:#1e1b4b;font-size:12px}
+  .mono{font-family:ui-monospace,Consolas,monospace}
+  .muted{color:var(--muted)}
+  .list{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+  .hidden{display:none !important}
+  .ck{display:flex;gap:8px;align-items:center;margin-top:6px}
+  .hr{height:1px;background:var(--line);margin:12px 0}
+  .kpis{display:grid;gap:10px;grid-template-columns:repeat(4,1fr)}
+  @media (max-width:880px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:520px){.kpis{grid-template-columns:1fr}}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+  .kpi .big{font-size:26px;font-weight:800}
+  .status{font-size:12px;border:1px solid var(--line);padding:4px 8px;border-radius:8px}
+  .status.pending{background:#fff7ed;color:#7c2d12;border-color:#fed7aa}
+  .status.progress{background:#ecfeff;color:#083344;border-color:#a5f3fc}
+  .status.training{background:#eef2ff;color:#1e1b4b;border-color:#c7d2fe}
+  .status.impl{background:#ecfdf5;color:#064e3b;border-color:#bbf7d0}
+  .status.closed{background:#f0f9ff;color:#0c4a6e;border-color:#bae6fd}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <div class="brand">
+      <div class="logo">A-Z</div>
+      <div class="tt"><b>Fault → Training Flow</b><span>A to Z Packers & Movers • Internal</span></div>
+    </div>
+    <div class="row">
+      <button id="btnExport" class="btn">Export</button>
+      <label class="btn">
+        <input id="importFile" type="file" accept="application/json" style="display:none"> Import
+      </label>
+      <a class="btn primary" target="_blank" href="https://wa.me/919338888550">WhatsApp Boss</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" id="app">
+
+  <!-- KPIs -->
+  <section class="kpis">
+    <div class="kpi">
+      <div class="muted">Open Faults</div>
+      <div id="kpiOpen" class="big">0</div>
+    </div>
+    <div class="kpi">
+      <div class="muted">In Training</div>
+      <div id="kpiTrain" class="big">0</div>
+    </div>
+    <div class="kpi">
+      <div class="muted">Implemented</div>
+      <div id="kpiImpl" class="big">0</div>
+    </div>
+    <div class="kpi">
+      <div class="muted">Closed Today</div>
+      <div id="kpiClosed" class="big">0</div>
+    </div>
+  </section>
+
+  <!-- 1) LOG FAULT -->
+  <section class="card">
+    <h2>1) 🚨 Log New Fault</h2>
+    <div class="grid g2">
+      <div>
+        <label>Fault Title</label>
+        <input id="f_title" placeholder="e.g., Driver not wearing uniform">
+      </div>
+      <div>
+        <label>Date</label>
+        <input id="f_date" type="date">
+      </div>
+      <div>
+        <label>Category</label>
+        <select id="f_cat">
+          <option>Operations</option><option>Customer</option><option>Technical</option>
+          <option>Vehicle</option><option>Staff</option><option>Documentation</option><option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Impact</label>
+        <select id="f_impact"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
+      </div>
+      <div>
+        <label>Tracking / Job ID (optional)</label>
+        <input id="f_track" placeholder="AZ-2025-0001">
+      </div>
+      <div>
+        <label>Involved Staff (comma separated name:phone)</label>
+        <input id="f_staff" placeholder="Sanjay:933xxxxxxx, Dhaneswar:9xxxxxxxxx">
+      </div>
+      <div>
+        <label>Vehicle (optional)</label>
+        <input id="f_vehicle" placeholder="OD 05 BS 8855">
+      </div>
+      <div>
+        <label>Expected Delivery (optional)</label>
+        <input id="f_edd" placeholder="YYYY-MM-DD">
+      </div>
+      <div class="g2" style="grid-column:1/-1">
+        <div style="grid-column:1/-1">
+          <label>Description</label>
+          <textarea id="f_desc" rows="3" placeholder="What happened? Root cause if known."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnSuggest" class="btn warn">🤖 AI — Suggest Solution & Training</button>
+      <button id="btnSaveFault" class="btn primary">Save Fault</button>
+    </div>
+  </section>
+
+  <!-- 2) AI SUGGESTION -->
+  <section id="aiBox" class="card hidden">
+    <h2>2) 🤖 AI Suggested Plan (Editable)</h2>
+    <div class="grid g2">
+      <div style="grid-column:1/-1">
+        <label>AI Suggested Solution (with emojis)</label>
+        <textarea id="ai_solution" rows="4"></textarea>
+      </div>
+      <div style="grid-column:1/-1">
+        <label>AI Suggested Training Steps</label>
+        <textarea id="ai_training" rows="5"></textarea>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnUseAI" class="btn ok">✅ Use This Plan</button>
+      <button id="btnHideAI" class="btn ghost">Cancel</button>
+    </div>
+  </section>
+
+  <!-- 3) NOTIFICATIONS -->
+  <section class="card">
+    <h2>3) 📩 Notifications (Optional)</h2>
+    <div class="ck"><input id="n_sms" type="checkbox"><label for="n_sms">Send SMS to involved staff</label></div>
+    <div class="ck"><input id="n_mail1" type="checkbox" checked><label for="n_mail1">Email to <b>info@atozpackersmovers.in</b></label></div>
+    <div class="ck"><input id="n_mail2" type="checkbox" checked><label for="n_mail2">Email to <b>manojgatibbi506@gmail.com</b></label></div>
+  </section>
+
+  <!-- 4) CONVERT TO TRAINING -->
+  <section class="card">
+    <h2>4) 🎓 Convert to Training & Assign</h2>
+    <div class="grid g2">
+      <div>
+        <label>Trainer Responsible</label>
+        <select id="t_trainer">
+          <option value="Kaviraj">Kaviraj</option>
+          <option value="Manoranjan">Manoranjan</option>
+          <option value="Toofan">Toofan</option>
+          <option value="Saroj">Saroj</option>
+        </select>
+      </div>
+      <div>
+        <label>Training Date</label>
+        <input id="t_date" type="date">
+      </div>
+      <div style="grid-column:1/-1">
+        <label>Training Agenda (editable)</label>
+        <textarea id="t_agenda" rows="4" placeholder="Steps, demo items, handouts, proof to collect..."></textarea>
+      </div>
+      <div style="grid-column:1/-1">
+        <label>Implementation Checklist (what proof will we collect?)</label>
+        <textarea id="t_impl" rows="3" placeholder="e.g., Uniform check-in photo daily for 3 days; TV packing 3-layer photo; vehicle service job card..."></textarea>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnCreateTraining" class="btn primary">Create Training Task</button>
+    </div>
+  </section>
+
+  <!-- 5) IMPLEMENTATION & CLOSE -->
+  <section class="card">
+    <h2>5) ✅ Implementation & Close Fault</h2>
+    <div class="ck"><input id="c_train" type="checkbox"><label for="c_train">Training delivered (proof uploaded)</label></div>
+    <div class="ck"><input id="c_impl" type="checkbox"><label for="c_impl">Implementation confirmed (evidence collected)</label></div>
+    <div class="ck"><input id="c_smooth" type="checkbox"><label for="c_smooth">Supervisor: working smoothly</label></div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnClose" class="btn ok">🚀 Close Fault</button>
+    </div>
+  </section>
+
+  <!-- ACTIVE RECORD -->
+  <section id="activeRec" class="card hidden">
+    <h2>Active Fault</h2>
+    <div id="activeSummary" class="muted"></div>
+  </section>
+
+  <!-- LISTS -->
+  <section class="card">
+    <h2>📋 All Faults & Trainings</h2>
+    <div id="lists" class="list"></div>
+  </section>
+
+</div>
+
+<script>
+/* ----------------- Storage / State ----------------- */
+const LS = "az_fault_training_v1";
+let DB = load() || { faults: [], trainings: [] };
+let ACTIVE_ID = null;
+function load(){ try{return JSON.parse(localStorage.getItem(LS)||"")}catch{return null} }
+function save(){ localStorage.setItem(LS, JSON.stringify(DB)) }
+
+/* ----------------- Utils ----------------- */
+const $ = s => document.querySelector(s);
+const nowISO = () => new Date().toISOString();
+const today = () => new Date().toISOString().slice(0,10);
+const uid = (p="F") => p + Math.random().toString(36).slice(2,8).toUpperCase();
+const parseStaff = (s) =>
+  (s||"").split(",").map(x=>x.trim()).filter(Boolean).map(x=>{
+    const [name, phone] = x.split(":").map(y=>y.trim());
+    return {name, phone};
+  });
+
+/* ----------------- Elements ----------------- */
+const f = {
+  title: $('#f_title'), date: $('#f_date'), cat: $('#f_cat'), impact: $('#f_impact'),
+  track: $('#f_track'), staff: $('#f_staff'), vehicle: $('#f_vehicle'), edd: $('#f_edd'), desc: $('#f_desc')
+};
+const n = { sms: $('#n_sms'), mail1: $('#n_mail1'), mail2: $('#n_mail2') };
+const aiBox = $('#aiBox'), aiSol = $('#ai_solution'), aiTrain = $('#ai_training');
+const t = { trainer: $('#t_trainer'), date: $('#t_date'), agenda: $('#t_agenda'), impl: $('#t_impl') };
+const closeCk = { train: $('#c_train'), impl: $('#c_impl'), smooth: $('#c_smooth') };
+const lists = $('#lists'), activeRec = $('#activeRec'), activeSummary = $('#activeSummary');
+const kpi = { open: $('#kpiOpen'), train: $('#kpiTrain'), impl: $('#kpiImpl'), closed: $('#kpiClosed') };
+
+/* ----------------- AI Suggestion Templates (offline mock) ----------------- */
+const AI_TEMPLATES = [
+  {
+    key: "uniform",
+    match: /uniform|dress|code/i,
+    solution: `👕 Ensure uniform issued to all on duty.\n📸 Daily check-in selfie in uniform before duty.\n🚫 ₹100 penalty for non-compliance as per policy.\n🧾 Supervisor to verify at start of shift.`,
+    training: `1) 📖 Explain uniform policy & penalties.\n2) 👕 Demo proper uniform standard.\n3) 📸 Train on check-in selfie process.\n4) 📝 Collect acknowledgement; monitor 3 days.`
+  },
+  {
+    key: "delay",
+    match: /delay|late|late delivery|eta/i,
+    solution: `⏱️ Share realistic ETA with customer immediately.\n🚚 Arrange backup vehicle/staff if needed.\n🛣️ Optimize route (maps) + toll balance check.\n📝 Note cause for future prevention.`,
+    training: `1) 🗺️ Route planning basics.\n2) 📞 Customer ETA communication script.\n3) 🧰 Contingency planning: backup vehicle.\n4) 📊 Post-trip delay analysis form.`
+  },
+  {
+    key: "breakdown",
+    match: /breakdown|puncture|engine|vehicle/i,
+    solution: `🆘 Call nearest garage; inform control room.\n🔁 Dispatch backup vehicle if delay > 1 hr.\n📣 Notify customer with revised ETA.\n🧰 Log issue for preventive maintenance.`,
+    training: `1) 🔧 Breakdown SOP walk-through.\n2) ☎️ Escalation tree & customer call script.\n3) 📝 Maintenance log discipline.\n4) 🚛 Spare/backup vehicle readiness.`
+  },
+  {
+    key: "packing_tv",
+    match: /tv|led|screen/i,
+    solution: `📦 Use 3-layer protection: foam + bubble + carton.\n🔒 Fragile label + upright arrow stickers.\n📸 Click photo before loading as proof.`,
+    training: `1) 🧪 Demo 3-layer packing for TV.\n2) 🏷️ Labeling standards (fragile/upright).\n3) 📸 Photo documentation habit.\n4) ✅ QA checklist before loading.`
+  }
+];
+function aiSuggest(title, desc){
+  const text = `${title} ${desc}`.toLowerCase();
+  let match = AI_TEMPLATES.find(t => t.match.test(text));
+  if(!match){
+    match = {
+      solution: `🧭 Identify root cause.\n✅ Apply quick corrective action.\n🔁 Define preventive step to stop repeat.\n📣 Inform customer/stakeholders as needed.`,
+      training: `1) 🧠 Root-cause basics.\n2) 📋 SOP recap for this category.\n3) 🧰 Tools/materials checklist.\n4) 🔄 Follow-up & proof collection.`
+    };
+  }
+  return match;
+}
+
+/* ----------------- Rendering ----------------- */
+function renderLists(){
+  const html = DB.faults.slice().reverse().map(f=>{
+    const statusClass = f.status==="Pending" ? "pending"
+      : f.status==="In Progress" ? "progress"
+      : f.status==="Training" ? "training"
+      : f.status==="Implemented" ? "impl"
+      : "closed";
+    const staffStr = (f.staff||[]).map(s=>`${s.name}${s.phone?` (${s.phone})`:``}`).join(", ") || "—";
+    const train = DB.trainings.find(x=>x.faultId===f.id);
+    return `
+      <div class="card">
+        <div class="row" style="justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="muted mono" style="font-size:12px">${f.date} • <b>${f.id}</b></div>
+            <div style="font-weight:700;margin-top:4px">${f.title}</div>
+            <div class="muted" style="margin-top:2px">${f.category} • Impact ${f.impact} • <span class="status ${statusClass}">${f.status}</span></div>
+            <div style="margin-top:6px">${f.desc || ""}</div>
+            <div class="row" style="margin-top:8px">
+              ${f.track?`<span class="pill">Tracking: ${f.track}</span>`:""}
+              ${f.vehicle?`<span class="pill">Vehicle: ${f.vehicle}</span>`:""}
+              ${f.edd?`<span class="pill">EDD: ${f.edd}</span>`:""}
+              <span class="pill">Staff: ${staffStr}</span>
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn ghost btn-open" data-id="${f.id}">Open</button>
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div>
+          <div class="muted" style="font-size:12px">Solution</div>
+          <div style="white-space:pre-wrap">${f.solution || "—"}</div>
+          <div class="muted" style="font-size:12px;margin-top:8px">Training</div>
+          <div style="white-space:pre-wrap">${f.training || "—"}</div>
+          ${train ? `
+            <div class="row" style="margin-top:8px">
+              <span class="pill">Trainer: ${train.trainer}</span>
+              <span class="pill">Training Date: ${train.date||"—"}</span>
+            </div>` : ``}
+        </div>
+      </div>
+    `;
+  }).join("") || `<div class="muted">No records yet.</div>`;
+  lists.innerHTML = html;
+
+  // wire "Open" buttons
+  document.querySelectorAll(".btn-open").forEach(b=>{
+    b.addEventListener("click",()=>{
+      ACTIVE_ID = b.getAttribute("data-id");
+      showActive();
+      window.scrollTo({top:0,behavior:"smooth"});
+    });
+  });
+
+  // KPIs
+  const open = DB.faults.filter(x=>["Pending","In Progress"].includes(x.status)).length;
+  const train = DB.faults.filter(x=>x.status==="Training").length;
+  const impl = DB.faults.filter(x=>x.status==="Implemented").length;
+  const closedToday = DB.faults.filter(x=>x.status==="Closed" && (x.closedAt||"").slice(0,10)===today()).length;
+  kpi.open.textContent = open; kpi.train.textContent = train; kpi.impl.textContent = impl; kpi.closed.textContent = closedToday;
+}
+
+function showActive(){
+  const f = DB.faults.find(x=>x.id===ACTIVE_ID);
+  if(!f){ activeRec.classList.add("hidden"); return; }
+  const staffStr = (f.staff||[]).map(s=>`${s.name}${s.phone?` (${s.phone})`:``}`).join(", ") || "—";
+  activeSummary.innerHTML = `
+    <div class="mono muted" style="font-size:12px">${f.date} • <b>${f.id}</b></div>
+    <div style="font-weight:700;margin-top:2px">${f.title}</div>
+    <div class="muted" style="margin-top:2px">${f.category} • Impact ${f.impact} • <span class="status">${f.status}</span></div>
+    <div style="margin-top:6px">${f.desc || ""}</div>
+    <div class="row" style="margin-top:6px">
+      ${f.track?`<span class="pill">Tracking: ${f.track}</span>`:""}
+      ${f.vehicle?`<span class="pill">Vehicle: ${f.vehicle}</span>`:""}
+      ${f.edd?`<span class="pill">EDD: ${f.edd}</span>`:""}
+      <span class="pill">Staff: ${staffStr}</span>
+    </div>
+  `;
+  activeRec.classList.remove("hidden");
+}
+
+/* ----------------- Events: Create, AI, Training, Close ----------------- */
+$('#f_date').value = today();
+$('#t_date').value = today();
+
+$('#btnSuggest').addEventListener('click', ()=>{
+  const m = aiSuggest(f.title.value||"", f.desc.value||"");
+  aiSol.value = m.solution;
+  aiTrain.value = m.training;
+  aiBox.classList.remove('hidden');
+});
+
+$('#btnHideAI').addEventListener('click', ()=> aiBox.classList.add('hidden'));
+
+$('#btnUseAI').addEventListener('click', ()=>{
+  // just keep AI text visible for editing; will be saved into the fault on Save
+  aiBox.classList.add('hidden');
+});
+
+$('#btnSaveFault').addEventListener('click', ()=>{
+  const rec = {
+    id: uid("F"),
+    date: f.date.value || today(),
+    title: (f.title.value||"").trim(),
+    category: f.cat.value,
+    impact: f.impact.value,
+    track: (f.track.value||"").trim(),
+    vehicle: (f.vehicle.value||"").trim(),
+    edd: (f.edd.value||"").trim(),
+    staff: parseStaff(f.staff.value),
+    desc: (f.desc.value||"").trim(),
+    solution: (aiSol.value||"").trim(),
+    training: (aiTrain.value||"").trim(),
+    status: "Pending",
+    notify: {
+      sms: n.sms.checked,
+      mail1: n.mail1.checked,
+      mail2: n.mail2.checked
+    },
+    createdAt: nowISO(),
+  };
+  DB.faults.push(rec);
+  save();
+  ACTIVE_ID = rec.id;
+  showActive();
+  renderLists();
+  alert("Fault saved. (Notifications are simulated in this demo.)");
+});
+
+$('#btnCreateTraining').addEventListener('click', ()=>{
+  if(!ACTIVE_ID){ alert("Open or create a fault first."); return; }
+  const fault = DB.faults.find(x=>x.id===ACTIVE_ID);
+  // Update solution/training text (in case edited after save)
+  fault.solution = (aiSol.value||fault.solution||"").trim();
+  fault.training = (aiTrain.value||fault.training||"").trim();
+
+  // Create/replace training task
+  DB.trainings = DB.trainings.filter(x=>x.faultId!==ACTIVE_ID);
+  DB.trainings.push({
+    id: uid("T"),
+    faultId: ACTIVE_ID,
+    trainer: t.trainer.value,
+    date: t.date.value || today(),
+    agenda: (t.agenda.value||"").trim(),
+    impl: (t.impl.value||"").trim(),
+    createdAt: nowISO()
+  });
+  // Move status → Training
+  fault.status = "Training";
+  save();
+  renderLists();
+  showActive();
+  alert("Training task created & trainer assigned. (Notification simulated.)");
+});
+
+$('#btnClose').addEventListener('click', ()=>{
+  if(!ACTIVE_ID){ alert("Open or create a fault first."); return; }
+  const fault = DB.faults.find(x=>x.id===ACTIVE_ID);
+  if(!closeCk.train.checked || !closeCk.impl.checked || !closeC
